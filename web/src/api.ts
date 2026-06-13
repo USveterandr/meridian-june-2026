@@ -71,6 +71,24 @@ export type User = {
   id: number; email: string; firstName: string; lastName: string; role: string;
   phone: string | null; locale: 'en' | 'es'; notifyMatches: boolean; notifyMessages: boolean;
 };
+
+export type Subscription = {
+  planId: string;
+  planName: string;
+  status: 'active' | 'trialing' | 'canceled' | 'past_due';
+  billing: 'monthly' | 'annual';
+  periodEnd: string | null;
+  commissionPct: number;
+  features: string[];
+};
+
+/** Map plan feature keys → listing limit (null = unlimited) */
+export function planListingLimit(features: string[]): number | null {
+  if (features.includes('unlimited_listings')) return null;
+  if (features.includes('listings_limit_100')) return 100;
+  if (features.includes('listings_limit_1')) return 1;
+  return 1; // default (free / no sub)
+}
 export type PropertyImage = { id: number; url: string; position: number };
 export type Property = {
   id: number; ownerId: number; title: string; description: string;

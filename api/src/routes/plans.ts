@@ -68,6 +68,140 @@ plans.post('/checkout/paypal', requireAuth, async (c) => {
   });
 });
 
+// ─── Create Stripe Checkout Session ─────────────────────────────────────
+// Requires STRIPE_SECRET_KEY wrangler secret:
+//   npx wrangler secret put STRIPE_SECRET_KEY
+//
+// Stripe price IDs (from planCatalog.ts / your Stripe dashboard):
+//   free:         price_1RB5DtKI2EJqqBKvd8yRNh0Z
+//   team:         price_1RB5GdKI2EJqqBKvJ6zIikqD
+//   professional: price_1RB5I0KI2EJqqBKvZbvGUC5Z
+//   enterprise:   price_1RB5NmKI2EJqqBKv5Yl8ZgRV
+const STRIPE_PRICE_IDS: Record<string, string> = {
+  free:         'price_1RB5DtKI2EJqqBKvd8yRNh0Z',
+  team:         'price_1RB5GdKI2EJqqBKvJ6zIikqD',
+  professional: 'price_1RB5I0KI2EJqqBKvZbvGUC5Z',
+  enterprise:   'price_1RB5NmKI2EJqqBKv5Yl8ZgRV',
+};
+
+plans.post('/checkout/stripe', requireAuth, async (c) => {
+  const stripeKey = c.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) return c.json({ error: 'Stripe is not configured on this server.' }, 503);
+
+  const user = c.get('user');
+  const body = await c.req.json().catch(() => ({})) as { planId?: string; billing?: string };
+  const { planId, billing = 'monthly' } = body;
+
+  if (!planId) return c.json({ error: 'planId is required.' }, 400);
+
+  const plan = await c.env.DB
+    .prepare('SELECT * FROM plans WHERE id = ? AND public = 1')
+    .bind(planId)
+    .first<PlanRow>();
+  if (!plan) return c.json({ error: 'Plan not found.' }, 404);
+
+  const priceId = STRIPE_PRICE_IDS[planId];
+  if (!priceId) return c.json({ error: 'No Stripe price configured for this plan. Contact support.' }, 400);
+
+  // Free plan — skip Stripe, create sub directly
+  if (plan.price_monthly_cents === 0 && planId !== 'enterprise') {
+    await upsertFreeSub(c.env.DB, user.id, planId);
+    return c.json({ success: true, redirect: '/dashboard' });
+  }
+
+  // Build Stripe Checkout Session via fetch (no SDK needed in Workers)
+  const origin = c.req.header('origin') ?? 'https://investwithmeridian.com';
+  const params = new URLSearchParams({
+    mode: 'subscription',
+    'line_items[0][price]': priceId,
+    'line_items[0][quantity]': '1',
+    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&plan=${planId}`,
+    cancel_url: `${origin}/pricing`,
+    customer_email: user.email,
+    'subscription_data[trial_period_days]': String(plan.trial_days > 0 ? plan.trial_days : 0),
+    'metadata[user_id]': String(user.id),
+    'metadata[plan_id]': planId,
+    'metadata[billing]': billing,
+  });
+
+  const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${stripeKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+  });
+
+  const session = await stripeRes.json() as { id?: string; url?: string; error?: { message: string } };
+  if (!stripeRes.ok || !session.url) {
+    const msg = session.error?.message ?? 'Failed to create Stripe session.';
+    return c.json({ error: msg }, 502);
+  }
+
+  return c.json({ success: false, stripeUrl: session.url, sessionId: session.id });
+});
+
+// ─── Stripe webhook: handle checkout.session.completed ───────────────────
+plans.post('/webhook/stripe', async (c) => {
+  const webhookSecret = c.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    // Fail closed: never grant subscriptions from an unverifiable payload.
+    return c.json({ error: 'Stripe webhooks are not configured on this server.' }, 503);
+  }
+
+  // Signature verification must run against the RAW request body.
+  const rawBody = await c.req.text();
+  const signature = c.req.header('stripe-signature') ?? '';
+  const verified = await verifyStripeSignature(rawBody, signature, webhookSecret);
+  if (!verified) {
+    return c.json({ error: 'Invalid Stripe signature.' }, 400);
+  }
+
+  const body = JSON.parse(rawBody) as { type?: string; data?: { object?: any } } | null;
+  if (!body || body.type !== 'checkout.session.completed') {
+    return c.json({ received: true });
+  }
+
+  const session = body.data?.object;
+  const userId = Number(session?.metadata?.user_id);
+  const planId = session?.metadata?.plan_id;
+  const billing = session?.metadata?.billing ?? 'monthly';
+  const stripeSubscriptionId = session?.subscription ?? null;
+
+  if (!userId || !planId) return c.json({ received: true });
+
+  const plan = await c.env.DB
+    .prepare('SELECT * FROM plans WHERE id = ?')
+    .bind(planId)
+    .first<PlanRow>();
+  if (!plan) return c.json({ received: true });
+
+  const periodDays = billing === 'annual' ? 365 : 30;
+  const periodEnd = new Date(Date.now() + periodDays * 24 * 60 * 60 * 1000).toISOString();
+
+  await c.env.DB
+    .prepare(`UPDATE subscriptions SET status = 'canceled' WHERE user_id = ? AND status IN ('active','trialing')`)
+    .bind(userId)
+    .run();
+
+  await c.env.DB
+    .prepare(`INSERT INTO subscriptions
+                (user_id, plan_id, status, billing_interval, current_period_end, stripe_subscription_id)
+              VALUES (?, ?, 'active', ?, ?, ?)`)
+    .bind(userId, planId, billing, periodEnd, stripeSubscriptionId)
+    .run();
+
+  if (plan.grants_role) {
+    await c.env.DB
+      .prepare('UPDATE users SET role = ? WHERE id = ?')
+      .bind(plan.grants_role, userId)
+      .run();
+  }
+
+  return c.json({ received: true });
+});
+
 // ─── PayPal webhook / return URL (after successful payment) ──────────────
 plans.post('/activate', requireAuth, async (c) => {
   const user = c.get('user');
@@ -223,6 +357,61 @@ plans.post('/seed', requireAuth, requireRole('admin'), async (c) => {
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
+
+/**
+ * Verify a Stripe webhook signature (scheme `v1`) using WebCrypto HMAC-SHA256.
+ * Mirrors Stripe's `constructEvent`: signed payload is `${timestamp}.${rawBody}`,
+ * compared in constant time against the `v1` signatures in the header. Rejects
+ * events older than the tolerance window to block replay attacks.
+ */
+async function verifyStripeSignature(
+  rawBody: string,
+  header: string,
+  secret: string,
+  toleranceSeconds = 300,
+): Promise<boolean> {
+  if (!header) return false;
+
+  // Header format: "t=1492774577,v1=abc...,v1=def..."
+  const parts = header.split(',').map((p) => p.trim());
+  const timestamp = parts.find((p) => p.startsWith('t='))?.slice(2);
+  const signatures = parts.filter((p) => p.startsWith('v1=')).map((p) => p.slice(3));
+  if (!timestamp || signatures.length === 0) return false;
+
+  // Replay protection
+  const ts = Number(timestamp);
+  if (!Number.isFinite(ts)) return false;
+  if (Math.abs(Date.now() / 1000 - ts) > toleranceSeconds) return false;
+
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const mac = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    new TextEncoder().encode(`${timestamp}.${rawBody}`),
+  );
+  const expected = [...new Uint8Array(mac)]
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return signatures.some((sig) => timingSafeEqual(sig, expected));
+}
+
+/** Constant-time string comparison to avoid timing side channels. */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 async function upsertFreeSub(db: AppEnv['Bindings']['DB'], userId: number, planId: string) {
   await db
     .prepare(`UPDATE subscriptions SET status = 'canceled'

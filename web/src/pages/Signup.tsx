@@ -11,11 +11,46 @@ const ROLE_KEY: Record<(typeof ROLES)[number], string> = {
   landlord: 'role.landlord', broker: 'role.broker', lawyer: 'role.lawyer', notary: 'role.notary',
 };
 
+// Seller property type options
+const SELLER_TYPES = [
+  { value: 'house', en: 'House', es: 'Casa' },
+  { value: 'apartment', en: 'Apartment', es: 'Apartamento' },
+  { value: 'villa', en: 'Villa', es: 'Villa' },
+  { value: 'land', en: 'Land / Lot', es: 'Terreno / Solar' },
+  { value: 'commercial', en: 'Commercial space', es: 'Local comercial' },
+  { value: 'other', en: 'Other', es: 'Otro' },
+] as const;
+
+// Investor property type options
+const INVESTOR_PROPERTY_TYPES = [
+  { value: 'residential', en: 'Residential (buy/flip)', es: 'Residencial (compra/venta)' },
+  { value: 'rental', en: 'Rental (buy & hold)', es: 'Alquiler (compra y renta)' },
+  { value: 'commercial', en: 'Commercial', es: 'Comercial' },
+  { value: 'land', en: 'Land / Development', es: 'Terreno / Desarrollo' },
+  { value: 'mixed', en: 'Mixed use', es: 'Uso mixto' },
+] as const;
+
+// Investor budget ranges
+const INVESTOR_BUDGETS = [
+  { value: '100k_300k', en: '$100K – $300K', es: '$100K – $300K' },
+  { value: '300k_600k', en: '$300K – $600K', es: '$300K – $600K' },
+  { value: '600k_1m', en: '$600K – $1M', es: '$600K – $1M' },
+  { value: '1m_5m', en: '$1M – $5M', es: '$1M – $5M' },
+  { value: '5m_plus', en: '$5M+', es: '$5M+' },
+] as const;
+
 export default function Signup() {
   const { user, register } = useAuth();
   const { t, lang } = useLang();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirm: '', role: 'buyer', terms: false });
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', email: '', password: '', confirm: '', role: 'buyer', terms: false,
+  });
+  // Conditional fields
+  const [sellerType, setSellerType] = useState('house');
+  const [investorPropertyType, setInvestorPropertyType] = useState('residential');
+  const [investorBudget, setInvestorBudget] = useState('300k_600k');
+
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -42,6 +77,13 @@ export default function Signup() {
     if (validateStep1()) setStep(2);
   }
 
+  // Build role-specific metadata to pass along with registration
+  function buildRoleMeta(): Record<string, string> {
+    if (form.role === 'seller') return { sellerType };
+    if (form.role === 'investor') return { investorPropertyType, investorBudget };
+    return {};
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
@@ -56,6 +98,7 @@ export default function Signup() {
         firstName: form.firstName.trim(), lastName: form.lastName.trim(),
         email: form.email.trim(), password: form.password, role: form.role, locale: lang,
         planId,
+        ...buildRoleMeta(),
       });
       navigate('/signup/success', { replace: true });
     } catch (err) {
@@ -133,6 +176,47 @@ export default function Signup() {
               {ROLES.map((r) => <option key={r} value={r}>{t(ROLE_KEY[r] as Parameters<typeof t>[0])}</option>)}
             </select>
           </div>
+
+          {/* ── Conditional: Seller questions ── */}
+          {form.role === 'seller' && (
+            <div className="field" style={{ background: 'var(--surface-2,rgba(255,255,255,0.04))', borderRadius: 8, padding: '12px 16px', border: '1px solid var(--border)' }}>
+              <label htmlFor="sellerType" style={{ fontWeight: 600 }}>
+                {lang === 'es' ? '¿Qué deseas vender?' : 'What do you want to sell?'}
+              </label>
+              <select id="sellerType" value={sellerType} onChange={(e) => setSellerType(e.target.value)}>
+                {SELLER_TYPES.map(({ value, en, es }) => (
+                  <option key={value} value={value}>{lang === 'es' ? es : en}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* ── Conditional: Investor questions ── */}
+          {form.role === 'investor' && (
+            <div style={{ background: 'var(--surface-2,rgba(255,255,255,0.04))', borderRadius: 8, padding: '12px 16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label htmlFor="investorType" style={{ fontWeight: 600 }}>
+                  {lang === 'es' ? '¿Qué tipo de inversión buscas?' : 'What type of investment?'}
+                </label>
+                <select id="investorType" value={investorPropertyType} onChange={(e) => setInvestorPropertyType(e.target.value)}>
+                  {INVESTOR_PROPERTY_TYPES.map(({ value, en, es }) => (
+                    <option key={value} value={value}>{lang === 'es' ? es : en}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label htmlFor="investorBudget" style={{ fontWeight: 600 }}>
+                  {lang === 'es' ? '¿Cuál es tu presupuesto?' : 'What is your budget?'}
+                </label>
+                <select id="investorBudget" value={investorBudget} onChange={(e) => setInvestorBudget(e.target.value)}>
+                  {INVESTOR_BUDGETS.map(({ value, en, es }) => (
+                    <option key={value} value={value}>{lang === 'es' ? es : en}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           <div className="form-row">
             <div className="field">
               <label htmlFor="password">{t('login.password')}</label>

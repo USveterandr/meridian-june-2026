@@ -88,6 +88,11 @@ export default function Home() {
             {t('hero.title1')} <span className="gold">{t('hero.title2')}</span>
           </h1>
           <p className="lede">{t('hero.lede')}</p>
+          <div className="hero-ctas" style={{ marginBottom: '28px' }}>
+            <Link className="btn gold" to="/search" id="hero-browse-btn">{t('hero.cta.browse')}</Link>
+            <Link className="btn outline" to={canList ? newListingPath() : '/signup'} id="hero-list-btn">{t('hero.cta.list')}</Link>
+            <Link className="btn outline" to="/contact" id="hero-consult-btn">{t('hero.cta.consult')}</Link>
+          </div>
           <form className="searchbar" onSubmit={onSearch} role="search">
             <span className="search-glyph" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
