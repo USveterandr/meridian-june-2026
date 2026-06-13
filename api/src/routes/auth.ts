@@ -22,6 +22,12 @@ type UserRow = {
   created_at: string;
 };
 
+type SubSummary = {
+  plan_id: string; plan_name: string; status: string; billing_interval: string;
+  current_period_end: string | null; plan_features: string;
+  price_monthly_cents: number; price_annual_cents: number; commission_pct: number;
+};
+
 function publicUser(u: UserRow) {
   return {
     id: u.id,
@@ -106,9 +112,32 @@ auth.post('/login', rateLimit('login', 8, 300), async (c) => {
 
 auth.get('/me', requireAuth, async (c) => {
   const { id } = c.get('user');
-  const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first<UserRow>();
+  const [user, sub] = await Promise.all([
+    c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first<UserRow>(),
+    c.env.DB.prepare(
+      `SELECT s.plan_id, s.status, s.billing_interval, s.current_period_end,
+              p.features AS plan_features, p.price_monthly_cents, p.price_annual_cents,
+              p.commission_pct, p.name AS plan_name
+       FROM subscriptions s JOIN plans p ON s.plan_id = p.id
+       WHERE s.user_id = ? AND s.status IN ('active','trialing')
+       ORDER BY s.created_at DESC LIMIT 1`
+    ).bind(id).first<SubSummary>(),
+  ]);
   if (!user) return c.json({ error: 'Account not found.' }, 404);
-  return c.json({ user: publicUser(user) });
+
+  const subscription = sub
+    ? {
+        planId: sub.plan_id,
+        planName: sub.plan_name,
+        status: sub.status,
+        billing: sub.billing_interval,
+        periodEnd: sub.current_period_end,
+        commissionPct: sub.commission_pct,
+        features: JSON.parse(sub.plan_features ?? '[]') as string[],
+      }
+    : null;
+
+  return c.json({ user: publicUser(user), subscription });
 });
 
 auth.patch('/me', requireAuth, async (c) => {

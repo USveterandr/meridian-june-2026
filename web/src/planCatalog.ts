@@ -4,6 +4,21 @@
 
 import type { Lang } from './i18n';
 
+// Stripe price IDs for each plan (monthly billing).
+// Used when creating Stripe Checkout Sessions.
+export const STRIPE_PRICE_IDS: Record<string, string> = {
+  free: 'price_1RB5DtKI2EJqqBKvd8yRNh0Z',
+  team: 'price_1RB5GdKI2EJqqBKvJ6zIikqD',
+  professional: 'price_1RB5I0KI2EJqqBKvZbvGUC5Z',
+  enterprise: 'price_1RB5NmKI2EJqqBKv5Yl8ZgRV',
+};
+
+// Stripe price IDs for media/photography upsell packages (one-time).
+export const STRIPE_UPSELL_PRICE_IDS = {
+  photos_video: 'price_1RB5VjKI2EJqqBKvgqO4laNa', // Essential Exposure $399 + Premium $899 photography/video
+  drone: 'price_1RB5XlKI2EJqqBKvZEIoEXEM',          // Drone footage add-on
+} as const;
+
 export const PLAN_ICON: Record<string, string> = {
   free: '🏠',
   team: '🚀',
