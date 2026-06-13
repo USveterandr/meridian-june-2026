@@ -1,6 +1,21 @@
-// In production set VITE_API_URL to your Worker URL, e.g.
-// https://meridian-api.<account>.workers.dev — in dev the Vite proxy handles /api.
-const API_BASE: string = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+// API base resolution, in priority order:
+//  1. VITE_API_URL build-time env var (explicit override).
+//  2. Local dev (localhost): empty base so the Vite proxy forwards /api → wrangler dev.
+//  3. Production fallback: the deployed Worker. Without this, a build that ships
+//     without VITE_API_URL would call /api on its own origin, where the SPA
+//     fallback returns index.html and every API call fails to parse.
+const PROD_API_URL = 'https://meridian-api.isaactrinidadllc.workers.dev';
+
+function resolveApiBase(): string {
+  const fromEnv = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
+  if (fromEnv) return fromEnv;
+  if (typeof location !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])/.test(location.hostname)) {
+    return '';
+  }
+  return PROD_API_URL;
+}
+
+const API_BASE: string = resolveApiBase();
 
 const TOKEN_KEY = 'meridian_token';
 
