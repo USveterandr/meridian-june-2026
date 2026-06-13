@@ -8,7 +8,9 @@
     "dev": "npx concurrently --kill-others --names \"api,web\" --prefix-colors \"yellow,cyan\" \"npm run dev:api\" \"npm run dev:web\"",
     "test:api": "npm run test --prefix api",
     "typecheck:api": "npm run typecheck --prefix api",
-    "typecheck:web": "npm run build --prefix web"
+    "typecheck:web": "npm run build --prefix web",
+    "build": "npm ci --prefix web && npm run build --prefix web",
+    "build:web": "npm run build --prefix web"
   },
   "devDependencies": {
     "wrangler": "^4.100.0"
