@@ -31,8 +31,14 @@ export default function Home() {
   const [cities, setCities] = useState<{ city: string; count: number }[]>([]);
 
   useSEO({
-    title: 'Luxury Real Estate in the Dominican Republic',
-    description: 'Browse luxury villas, condos, apartments, and land for sale and rent across the Dominican Republic. Punta Cana, Cap Cana, Santo Domingo, Las Terrenas.',
+    title: {
+      en: 'Luxury Real Estate in the Dominican Republic',
+      es: 'Bienes Raíces de Lujo en la República Dominicana',
+    },
+    description: {
+      en: 'Browse luxury villas, condos, apartments, and land for sale and rent across the Dominican Republic. Punta Cana, Cap Cana, Santo Domingo, Las Terrenas.',
+      es: 'Explora villas de lujo, condominios, apartamentos y terrenos en venta y alquiler en toda la República Dominicana. Punta Cana, Cap Cana, Santo Domingo, Las Terrenas.',
+    },
     canonical: 'https://investwithmeridian.com/',
     jsonLd: {
       '@context': 'https://schema.org',

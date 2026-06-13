@@ -262,8 +262,13 @@ const LanguageContext = createContext<Ctx | null>(null);
 
 function detectLang(): Lang {
   try {
+    // 1. Explicit ?lang= in the URL (used by hreflang alternates) wins.
+    const param = new URLSearchParams(window.location.search).get('lang');
+    if (param === 'en' || param === 'es') return param;
+    // 2. Saved preference.
     const saved = localStorage.getItem('meridian_lang');
     if (saved === 'en' || saved === 'es') return saved;
+    // 3. Browser language.
     return (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
   } catch {
     return 'en';

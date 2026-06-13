@@ -15,8 +15,11 @@ export default function Analytics() {
   const [error, setError] = useState(false);
 
   useSEO({
-    title: 'Analytics',
-    description: 'Track Meridian listing performance and lead activity.',
+    title: { en: 'Analytics', es: 'Analíticas' },
+    description: {
+      en: 'Track Meridian listing performance and lead activity.',
+      es: 'Da seguimiento al rendimiento de tus listados y la actividad de prospectos en Meridian.',
+    },
     canonical: 'https://investwithmeridian.com/analytics',
     noindex: true,
   });

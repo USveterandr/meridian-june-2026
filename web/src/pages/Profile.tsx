@@ -15,8 +15,11 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
 
   useSEO({
-    title: 'Profile & Settings',
-    description: 'Manage your Meridian profile, notifications, language, and account preferences.',
+    title: { en: 'Profile & Settings', es: 'Perfil y Configuración' },
+    description: {
+      en: 'Manage your Meridian profile, notifications, language, and account preferences.',
+      es: 'Gestiona tu perfil de Meridian, notificaciones, idioma y preferencias de cuenta.',
+    },
     canonical: 'https://investwithmeridian.com/profile',
     noindex: true,
   });

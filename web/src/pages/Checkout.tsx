@@ -38,8 +38,11 @@ export default function Checkout() {
   const [error, setError] = useState('');
 
   useSEO({
-    title: 'Checkout',
-    description: 'Complete your Meridian subscription checkout.',
+    title: { en: 'Checkout', es: 'Pago' },
+    description: {
+      en: 'Complete your Meridian subscription checkout.',
+      es: 'Completa el pago de tu suscripción de Meridian.',
+    },
     canonical: 'https://investwithmeridian.com/checkout',
     noindex: true,
   });

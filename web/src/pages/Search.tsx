@@ -16,8 +16,11 @@ export default function Search() {
   const [loading, setLoading] = useState(true);
 
   useSEO({
-    title: 'Search Properties',
-    description: 'Search luxury properties for sale and rent in the Dominican Republic. Filter by city, price, bedrooms, and property type.',
+    title: { en: 'Search Properties', es: 'Buscar Propiedades' },
+    description: {
+      en: 'Search luxury properties for sale and rent in the Dominican Republic. Filter by city, price, bedrooms, and property type.',
+      es: 'Busca propiedades de lujo en venta y alquiler en la República Dominicana. Filtra por ciudad, precio, habitaciones y tipo de propiedad.',
+    },
     canonical: 'https://investwithmeridian.com/search',
   });
 

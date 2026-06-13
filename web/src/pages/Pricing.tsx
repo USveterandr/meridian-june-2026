@@ -21,8 +21,11 @@ export default function Pricing() {
   const navigate = useNavigate();
 
   useSEO({
-    title: 'Pricing Plans',
-    description: 'Choose from Explorer (free), Professional, Brokerage, Enterprise, or Investor plans. Simple, transparent pricing for Dominican Republic real estate.',
+    title: { en: 'Pricing Plans', es: 'Planes y Precios' },
+    description: {
+      en: 'Choose from FREE Start, TEAM Essentials, PROFESSIONAL Business, or ENTERPRISE Solutions. Simple, transparent pricing for Dominican Republic real estate.',
+      es: 'Elige entre Inicio GRATIS, Equipo Esencial, Negocio PROFESIONAL o Soluciones EMPRESARIALES. Precios simples y transparentes para bienes raíces en República Dominicana.',
+    },
     canonical: 'https://investwithmeridian.com/pricing',
   });
 

@@ -101,7 +101,10 @@ export default function PropertyDetail() {
 
   useSEO({
     title: seoProperty?.title,
-    description: seoProperty ? `${seoProperty.propertyType === 'villa' ? 'Luxury villa' : seoProperty.propertyType} for ${seoProperty.listingType} in ${seoProperty.city}, Dominican Republic. ${seoProperty.bedrooms} beds, ${seoProperty.bathrooms} baths${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}. ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mo')}.` : undefined,
+    description: seoProperty ? {
+      en: `${seoProperty.propertyType === 'villa' ? 'Luxury villa' : seoProperty.propertyType} for ${seoProperty.listingType} in ${seoProperty.city}, Dominican Republic. ${seoProperty.bedrooms} beds, ${seoProperty.bathrooms} baths${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}. ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mo')}.`,
+      es: `${seoProperty.propertyType === 'villa' ? 'Villa de lujo' : seoProperty.propertyType} en ${seoProperty.listingType === 'sale' ? 'venta' : 'alquiler'} en ${seoProperty.city}, República Dominicana. ${seoProperty.bedrooms} habitaciones, ${seoProperty.bathrooms} baños${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}. ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mes')}.`,
+    } : undefined,
     canonical: seoProperty ? `https://investwithmeridian.com/property/${seoProperty.id}` : undefined,
     jsonLd: seoProperty ? {
       '@context': 'https://schema.org',
