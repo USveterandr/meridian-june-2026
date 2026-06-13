@@ -1,0 +1,16 @@
+{
+  "name": "meridian-root",
+  "private": true,
+  "scripts": {
+    "dev:api": "npm run dev --prefix api",
+    "dev:web": "npm run dev --prefix web",
+    "dev:mobile": "npm run start --prefix mobile",
+    "dev": "npx concurrently --kill-others --names \"api,web\" --prefix-colors \"yellow,cyan\" \"npm run dev:api\" \"npm run dev:web\"",
+    "test:api": "npm run test --prefix api",
+    "typecheck:api": "npm run typecheck --prefix api",
+    "typecheck:web": "npm run build --prefix web"
+  },
+  "devDependencies": {
+    "wrangler": "^4.100.0"
+  }
+}

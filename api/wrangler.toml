@@ -1,0 +1,25 @@
+name = "meridian-api"
+main = "src/index.ts"
+compatibility_date = "2026-01-15"
+
+# JWT_SECRET must NEVER live in this file. Set it with:
+#   npx wrangler secret put JWT_SECRET
+# (generate one with: openssl rand -base64 48)
+
+[[d1_databases]]
+binding = "DB"
+database_name = "meridian-db"
+database_id = "c1657807-0c44-49d1-9ae7-e62792af5b7c"
+
+# [[r2_buckets]]      ← Uncomment after enabling R2 in Cloudflare Dashboard
+# binding = "ASSETS"
+# bucket_name = "meridian-assets"
+
+
+[vars]
+# Comma-separated list of origins allowed to call this API.
+# Update these after deploying the frontend to Cloudflare Pages.
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-9st.pages.dev,https://meridian-mobile.pages.dev,https://investwithmeridian.com"
+
+[observability]
+enabled = true

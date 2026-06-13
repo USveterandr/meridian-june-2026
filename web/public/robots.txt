@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /messages/
+Disallow: /favorites/
+Disallow: /requirements/
+
+# Sitemap
+Sitemap: https://investwithmeridian.com/sitemap.xml
+
+# Crawl delay (be polite to bots)
+Crawl-delay: 2
