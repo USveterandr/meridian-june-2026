@@ -560,14 +560,22 @@ export async function importListings(
   minPriceUSD: number,
   ownerId: number
 ): Promise<number> {
-  let count = 0;
   const minPriceCents = minPriceUSD * 100;
+  const items = CRAWLED_DR_PROPERTIES.filter((item) => item.priceCents >= minPriceCents);
+  return importScrapedProperties(db, assets, items, ownerId);
+}
 
-  for (const item of CRAWLED_DR_PROPERTIES) {
-    // 1. Filter by minimum price
-    if (item.priceCents < minPriceCents) continue;
+/** Inserts a list of already-normalized properties, skipping duplicates by title. */
+export async function importScrapedProperties(
+  db: any,
+  assets: any,
+  items: ScrapedProperty[],
+  ownerId: number
+): Promise<number> {
+  let count = 0;
 
-    // 2. Check if already exists (prevent duplicate imports)
+  for (const item of items) {
+    // 1. Check if already exists (prevent duplicate imports)
     const existing = await db
       .prepare('SELECT id FROM properties WHERE title = ?')
       .bind(item.title)
