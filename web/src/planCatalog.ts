@@ -18,6 +18,24 @@ export const PLAN_HIGHLIGHT: Record<string, boolean> = {
   pro: true,
 };
 
+// Seat / user counts shown in the plan comparison table.
+export const PLAN_SEATS: Record<string, Record<Lang, string>> = {
+  free: { en: '1 user', es: '1 usuario' },
+  pro: { en: '1 user', es: '1 usuario' },
+  brokerage: { en: '10 agent seats', es: '10 cuentas de agente' },
+  enterprise: { en: '50+ agent seats', es: '50+ cuentas de agente' },
+  investor: { en: '1 user', es: '1 usuario' },
+};
+
+// "Best for" copy shown in the plan comparison table.
+export const PLAN_BEST_FOR: Record<string, Record<Lang, string>> = {
+  free: { en: 'Testing the waters with your first listing', es: 'Probar el terreno con tu primera propiedad' },
+  pro: { en: 'Solo agents ready to drop the 3% commission', es: 'Agentes independientes listos para eliminar el 3% de comisión' },
+  brokerage: { en: 'Teams who need one system for every agent', es: 'Equipos que necesitan un solo sistema para todos los agentes' },
+  enterprise: { en: 'Institutions that want the platform as their own', es: 'Instituciones que quieren la plataforma como propia' },
+  investor: { en: "Investors who need the deal before it's public", es: 'Inversionistas que necesitan la oportunidad antes de que sea pública' },
+};
+
 export const PLAN_COPY: Record<string, Record<Lang, { name: string; tagline: string }>> = {
   free: {
     en: {
@@ -120,6 +138,18 @@ export const FEATURE_LABELS: Record<Lang, Record<string, string>> = {
     cash_flow_projections: 'Cash-flow projections',
     offmarket_deals: 'Off-market & pre-listing access',
     investor_network: 'Private investor network access',
+    export_csv: 'Export your data to CSV, anytime',
+    email_support_24h: 'Email support — 24-hour response',
+    shared_favorites: 'Shared team favorites & saved searches',
+    role_based_access: 'Role-based access for every team member',
+    bulk_export: 'Bulk export & reporting tools',
+    priority_chat_2h: 'Priority live chat — 2-hour response',
+    sso_saml: 'Single sign-on (SSO/SAML)',
+    dedicated_success_manager: 'Dedicated success manager — a real person, on call',
+    white_glove_onboarding: 'White-glove onboarding & data migration',
+    sla_uptime: '99.9% uptime SLA, guaranteed',
+    sniper_mode: '"Sniper Mode" — the alert before it\'s public',
+    premium_support_30min: 'Premium support — 30-minute response, any time',
   },
   es: {
     browse_listings: 'Acceso total a todas las propiedades',
@@ -169,6 +199,18 @@ export const FEATURE_LABELS: Record<Lang, Record<string, string>> = {
     cash_flow_projections: 'Proyecciones de flujo de caja',
     offmarket_deals: 'Acceso a propiedades fuera de mercado',
     investor_network: 'Acceso a la red privada de inversionistas',
+    export_csv: 'Exporta tus datos a CSV cuando quieras',
+    email_support_24h: 'Soporte por email — respuesta en 24 horas',
+    shared_favorites: 'Favoritos y búsquedas guardadas compartidas del equipo',
+    role_based_access: 'Acceso por roles para cada miembro del equipo',
+    bulk_export: 'Exportación masiva y herramientas de reportes',
+    priority_chat_2h: 'Chat prioritario — respuesta en 2 horas',
+    sso_saml: 'Inicio de sesión único (SSO/SAML)',
+    dedicated_success_manager: 'Gestor de éxito dedicado — una persona real, disponible',
+    white_glove_onboarding: 'Incorporación y migración de datos con servicio premium',
+    sla_uptime: 'SLA de 99.9% de disponibilidad garantizada',
+    sniper_mode: '"Modo Sniper" — la alerta antes de que sea pública',
+    premium_support_30min: 'Soporte premium — respuesta en 30 minutos, a cualquier hora',
   },
 };
 
