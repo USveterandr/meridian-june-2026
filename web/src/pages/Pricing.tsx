@@ -5,7 +5,7 @@ import { useAuth } from '../auth';
 import { useLang } from '../i18n';
 import { useSEO } from '../seo';
 import {
-  PLAN_ICON as ICON, PLAN_HIGHLIGHT as HIGHLIGHT,
+  PLAN_ICON as ICON, PLAN_HIGHLIGHT as HIGHLIGHT, PLAN_SEATS, PLAN_BEST_FOR,
   planName, planTagline, featureLabel, type ApiPlan as Plan,
 } from '../planCatalog';
 
@@ -181,6 +181,51 @@ export default function Pricing() {
           )}
         </div>
       </section>
+
+      {/* ── Plan comparison table ───────────────────────────────────────────── */}
+      {!loading && plans.length > 0 && (
+        <section className="section" style={{ borderTop: '1px solid var(--line)' }}>
+          <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <p className="eyebrow">{t('pricing.compare.eyebrow')}</p>
+              <h2>{t('pricing.compare.title')}</h2>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table plan-compare">
+                <thead>
+                  <tr>
+                    <th>{t('pricing.compare.plan')}</th>
+                    <th>{t('pricing.compare.price')}</th>
+                    <th>{t('pricing.compare.seats')}</th>
+                    <th>{t('pricing.compare.bestFor')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {plans.map((plan) => {
+                    const p = price(plan);
+                    const isEnterprise = plan.id === 'enterprise';
+                    return (
+                      <tr key={plan.id}>
+                        <td>
+                          <span className="plan-icon" style={{ fontSize: '1.1rem', marginRight: 8 }}>{ICON[plan.id] ?? '⭐'}</span>
+                          {planName(plan, lang)}
+                        </td>
+                        <td>
+                          {isEnterprise ? t('pricing.contactSales')
+                            : p === 0 ? t('pricing.freeLabel')
+                            : `$${p.toFixed(0)}${t('pricing.perMonth')}`}
+                        </td>
+                        <td>{PLAN_SEATS[plan.id]?.[lang] ?? ''}</td>
+                        <td>{PLAN_BEST_FOR[plan.id]?.[lang] ?? ''}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Addons / Media Packages ─────────────────────────────────────────── */}
       <section className="section" style={{ borderTop: '1px solid var(--line)' }}>
