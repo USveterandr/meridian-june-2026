@@ -11,8 +11,9 @@ import verify from './routes/verify';
 import territories from './routes/territories';
 import plans from './routes/plans';
 import users from './routes/users';
-import type { AppEnv } from './types';
+import type { AppEnv, Bindings } from './types';
 import { logger } from './lib/logger';
+import { expireSubscriptions } from './lib/subscriptions';
 
 const app = new Hono<AppEnv>();
 
@@ -102,4 +103,14 @@ app.route('/api/users', users);
 
 app.notFound((c) => c.json({ error: 'Not found.' }, 404));
 
-export default app;
+export { app };
+
+export default {
+  fetch: app.fetch,
+  // Daily sweep: cancels subscriptions/trials past their current_period_end
+  // and reverts any role they granted. See lib/subscriptions.ts.
+  scheduled: async (_event, env, _ctx) => {
+    const result = await expireSubscriptions(env.DB);
+    logger.info('Subscription expiration sweep complete', result);
+  },
+} satisfies ExportedHandler<Bindings>;

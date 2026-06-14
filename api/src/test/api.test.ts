@@ -2,7 +2,7 @@ import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
-import app from '../index';
+import { app } from '../index';
 import { MockD1Database } from './db-mock';
 import { MockR2Bucket } from './r2-mock';
 
@@ -252,7 +252,7 @@ describe('Meridian API Integration Tests', () => {
           password: 'Password123!',
           role: 'seller',
           locale: 'en',
-          planId: 'professional', // unlimited listings for tests
+          planId: 'pro', // 100 listings/photos limit, plenty for tests
         }),
       }, env);
       const sellerData = await sellerRes.json();
@@ -495,21 +495,113 @@ describe('Meridian API Integration Tests', () => {
           password: 'Password123!',
           role: 'agent',
           locale: 'es',
-          planId: 'team',
+          planId: 'pro',
         }),
       }, env);
       assert.strictEqual(res.status, 201);
       const { token, user } = await res.json();
-      assert.strictEqual(user.role, 'seller'); // team plan grants seller role
+      assert.strictEqual(user.role, 'seller'); // pro plan grants seller role
 
       const subRes = await app.request('/api/plans/my', {
         method: 'GET',
         headers: getHeaders({ Authorization: `Bearer ${token}` }),
       }, env);
       const subData = await subRes.json();
-      assert.strictEqual(subData.plan, 'team');
+      assert.strictEqual(subData.plan, 'pro');
       assert.strictEqual(subData.subscription.status, 'trialing');
       assert.ok(subData.subscription.periodEnd); // 30-day trial end set
+    });
+  });
+
+  describe('Subscription Lifecycle', () => {
+    it('should not grant active status from an unverified PayPal transaction ID', async () => {
+      const regRes = await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          firstName: 'Shady', lastName: 'Buyer', email: 'shady@example.com',
+          password: 'Password123!', role: 'buyer', locale: 'en', planId: 'free',
+        }),
+      }, env);
+      const { token } = await regRes.json();
+
+      // Claiming an arbitrary, unverified PayPal transaction ID must NOT
+      // grant a paid 'active' subscription/role for free.
+      const res = await app.request('/api/plans/activate', {
+        method: 'POST',
+        headers: getHeaders({ Authorization: `Bearer ${token}` }),
+        body: JSON.stringify({ planId: 'investor', paypalTransactionId: 'FAKE-NOT-VERIFIED' }),
+      }, env);
+      assert.strictEqual(res.status, 200);
+      const data = await res.json();
+      assert.strictEqual(data.status, 'trialing');
+      assert.strictEqual(data.trial, true);
+
+      const meRes = await app.request('/api/auth/me', {
+        method: 'GET',
+        headers: getHeaders({ Authorization: `Bearer ${token}` }),
+      }, env);
+      const meData = await meRes.json();
+      assert.strictEqual(meData.user.role, 'investor'); // role granted, but only as a trial
+      assert.strictEqual(meData.subscription.status, 'trialing');
+    });
+
+    it('should cancel expired subscriptions and revert the granted role on sweep', async () => {
+      const regRes = await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          firstName: 'Trial', lastName: 'User', email: 'trialuser@example.com',
+          password: 'Password123!', role: 'buyer', locale: 'en', planId: 'pro',
+        }),
+      }, env);
+      const { token, user } = await regRes.json();
+      assert.strictEqual(user.role, 'seller'); // pro plan grants seller role
+
+      // Backdate the trial's period end so the sweep treats it as expired.
+      dbSync.exec(`UPDATE subscriptions SET current_period_end = '2000-01-01T00:00:00.000Z' WHERE user_id = ${user.id}`);
+
+      // Create an admin to trigger the sweep endpoint.
+      await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          firstName: 'Admin', lastName: 'User', email: 'admin-sweep@example.com',
+          password: 'Password123!', role: 'buyer', locale: 'en',
+        }),
+      }, env);
+      dbSync.exec(`UPDATE users SET role = 'admin' WHERE email = 'admin-sweep@example.com'`);
+      const adminLogin = await app.request('/api/auth/login', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ email: 'admin-sweep@example.com', password: 'Password123!' }),
+      }, env);
+      const { token: adminToken } = await adminLogin.json();
+
+      const sweepRes = await app.request('/api/plans/expire', {
+        method: 'POST',
+        headers: getHeaders({ Authorization: `Bearer ${adminToken}` }),
+      }, env);
+      assert.strictEqual(sweepRes.status, 200);
+      const sweepData = await sweepRes.json();
+      assert.strictEqual(sweepData.expired, 1);
+      assert.strictEqual(sweepData.downgraded, 1);
+
+      // Role reverted to the pre-subscription role, and plan back to free.
+      const meRes = await app.request('/api/auth/me', {
+        method: 'GET',
+        headers: getHeaders({ Authorization: `Bearer ${token}` }),
+      }, env);
+      const meData = await meRes.json();
+      assert.strictEqual(meData.user.role, 'buyer');
+      assert.strictEqual(meData.subscription, null);
+
+      const subRes = await app.request('/api/plans/my', {
+        method: 'GET',
+        headers: getHeaders({ Authorization: `Bearer ${token}` }),
+      }, env);
+      const subData = await subRes.json();
+      assert.strictEqual(subData.plan, 'free');
     });
   });
 
@@ -528,7 +620,7 @@ describe('Meridian API Integration Tests', () => {
           password: 'Password123!',
           role: 'seller',
           locale: 'en',
-          planId: 'professional', // unlimited listings for tests
+          planId: 'pro', // 100 listings/photos limit, plenty for tests
         }),
       }, env);
       const sellerData = await sellerRes.json();
@@ -659,7 +751,7 @@ describe('Meridian API Integration Tests', () => {
           password: 'Password123!',
           role: 'seller',
           locale: 'en',
-          planId: 'professional', // unlimited listings for tests
+          planId: 'pro', // 100 listings/photos limit, plenty for tests
         }),
       }, env);
       const { token: sToken } = await sellerRes.json();
@@ -746,7 +838,7 @@ describe('Meridian API Integration Tests', () => {
           password: 'Password123!',
           role: 'seller',
           locale: 'en',
-          planId: 'professional', // unlimited listings for tests
+          planId: 'pro', // 100 listings/photos limit, plenty for tests
         }),
       }, env);
       const { token: sToken } = await sellerRes.json();

@@ -23,3 +23,7 @@ ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-
 
 [observability]
 enabled = true
+
+[triggers]
+# Daily sweep to cancel expired trials/subscriptions and revert granted roles.
+crons = ["0 6 * * *"]

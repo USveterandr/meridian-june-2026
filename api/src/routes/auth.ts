@@ -74,11 +74,14 @@ auth.post('/register', rateLimit('register', 10, 600), async (c) => {
       const trialDays = plan.trial_days > 0 ? plan.trial_days : 30;
       const status = isPaid ? 'trialing' : 'active';
       const periodEnd = isPaid ? new Date(Date.now() + trialDays * 86_400_000).toISOString() : null;
+      const grantsRole = plan.grants_role && result.role !== 'admin';
+      // Record the role chosen at signup so expiration can revert to it.
+      const previousRole = grantsRole ? result.role : null;
       await c.env.DB.prepare(
-        `INSERT INTO subscriptions (user_id, plan_id, status, billing_interval, current_period_end)
-         VALUES (?, ?, ?, 'monthly', ?)`
-      ).bind(result.id, plan.id, status, periodEnd).run();
-      if (plan.grants_role && result.role !== 'admin') {
+        `INSERT INTO subscriptions (user_id, plan_id, status, billing_interval, current_period_end, previous_role)
+         VALUES (?, ?, ?, 'monthly', ?, ?)`
+      ).bind(result.id, plan.id, status, periodEnd, previousRole).run();
+      if (grantsRole && plan.grants_role) {
         await c.env.DB.prepare('UPDATE users SET role = ? WHERE id = ?').bind(plan.grants_role, result.id).run();
         result.role = plan.grants_role;
       }
