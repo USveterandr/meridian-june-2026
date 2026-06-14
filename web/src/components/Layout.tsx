@@ -147,6 +147,8 @@ export default function Layout() {
                 <a href="mailto:info@investwithmeridian.com">info@investwithmeridian.com</a>
                 <a href="https://wa.me/14707089223" target="_blank" rel="noopener noreferrer">WhatsApp</a>
                 <Link to="/contact">{t('footer.legal')}</Link>
+                <Link to="/terms">{t('footer.terms')}</Link>
+                <Link to="/privacy">{t('footer.privacy')}</Link>
               </div>
             </nav>
           </div>
