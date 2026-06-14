@@ -26,9 +26,15 @@ export class MockD1PreparedStatement {
     };
   }
 
-  async run(): Promise<{ success: boolean }> {
-    this.stmt.run(...this.params);
-    return { success: true };
+  async run(): Promise<{ success: boolean; meta: { rows_written: number; last_row_id: number } }> {
+    const result = this.stmt.run(...this.params);
+    return {
+      success: true,
+      meta: {
+        rows_written: Number(result.changes),
+        last_row_id: Number(result.lastInsertRowid),
+      },
+    };
   }
 }
 

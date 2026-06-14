@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth, requireRole } from '../middleware/auth';
+import { expireSubscriptions } from '../lib/subscriptions';
 import type { AppEnv } from '../types';
 
 const plans = new Hono<AppEnv>();
@@ -221,8 +222,14 @@ plans.post('/activate', requireAuth, async (c) => {
 
   // Paid (or custom-priced) plans without a verified payment start as a free
   // trial — no card required. Payment processing (Stripe) is wired in later.
+  //
+  // NOTE: paypalOrderId/paypalTransactionId are NOT verified against PayPal's
+  // API (no server-side order creation exists yet — see /checkout/paypal).
+  // They are stored for reference only and must never be treated as proof of
+  // payment, or any authenticated user could grant themselves an 'active'
+  // paid subscription/role for free.
   const isPaidPlan = plan.price_monthly_cents !== 0 || plan.price_annual_cents !== 0 || plan.id === 'enterprise';
-  const hasPayment = Boolean(paypalOrderId || paypalTransactionId) || user.role === 'admin';
+  const hasPayment = user.role === 'admin';
   const trialDays = plan.trial_days > 0 ? plan.trial_days : 30;
 
   if (isPaidPlan && !hasPayment && plan.trial_days <= 0 && plan.id !== 'enterprise') {
@@ -233,6 +240,15 @@ plans.post('/activate', requireAuth, async (c) => {
   const periodDays = status === 'trialing' ? trialDays : (billing === 'annual' ? 365 : 30);
   const periodEnd = new Date(Date.now() + periodDays * 24 * 60 * 60 * 1000).toISOString();
 
+  // If switching plans, carry forward the role the user had before any
+  // subscription granted them a role — so expiration reverts correctly even
+  // across multiple plan changes.
+  const currentSub = await c.env.DB
+    .prepare(`SELECT previous_role FROM subscriptions WHERE user_id = ? AND status IN ('active','trialing') ORDER BY created_at DESC LIMIT 1`)
+    .bind(user.id)
+    .first<{ previous_role: string | null }>();
+  const previousRole = plan.grants_role ? (currentSub?.previous_role ?? user.role) : null;
+
   // Cancel existing active subscriptions for this user
   await c.env.DB
     .prepare(`UPDATE subscriptions SET status = 'canceled' WHERE user_id = ? AND status IN ('active','trialing')`)
@@ -242,9 +258,9 @@ plans.post('/activate', requireAuth, async (c) => {
   // Create new subscription record
   await c.env.DB
     .prepare(`INSERT INTO subscriptions
-                (user_id, plan_id, status, billing_interval, current_period_end, paypal_order_id, paypal_transaction_id)
-              VALUES (?, ?, ?, ?, ?, ?, ?)`)
-    .bind(user.id, planId, status, billing, plan.price_monthly_cents === 0 && plan.id !== 'enterprise' ? null : periodEnd, paypalOrderId ?? null, paypalTransactionId ?? null)
+                (user_id, plan_id, status, billing_interval, current_period_end, paypal_order_id, paypal_transaction_id, previous_role)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(user.id, planId, status, billing, plan.price_monthly_cents === 0 && plan.id !== 'enterprise' ? null : periodEnd, paypalOrderId ?? null, paypalTransactionId ?? null, previousRole)
     .run();
 
   // Update user role if plan grants a role upgrade
@@ -377,6 +393,13 @@ plans.post('/seed', requireAuth, requireRole('admin'), async (c) => {
     .run();
 
   return c.json({ seeded: PLANS.length });
+});
+
+// ─── Admin: manually run the trial/subscription expiration sweep ─────────
+// Normally runs daily via the Worker's cron trigger (see index.ts).
+plans.post('/expire', requireAuth, requireRole('admin'), async (c) => {
+  const result = await expireSubscriptions(c.env.DB);
+  return c.json(result);
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────

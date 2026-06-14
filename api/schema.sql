@@ -134,6 +134,9 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   paypal_order_id       TEXT,
   paypal_transaction_id TEXT,
   stripe_subscription_id TEXT,
+  -- User's role immediately before this subscription's grants_role was applied.
+  -- Used to revert the role when the subscription expires/cancels.
+  previous_role         TEXT,
   created_at            TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions (user_id, status);
