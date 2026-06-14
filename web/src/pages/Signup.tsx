@@ -232,7 +232,13 @@ export default function Signup() {
           <div className="field">
             <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
               <input type="checkbox" checked={form.terms} onChange={(e) => set('terms', e.target.checked)} style={{ marginTop: 3 }} />
-              <span>{t('signup.terms')}</span>
+              <span>
+                {t('signup.terms.prefix')}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer">{t('footer.terms')}</Link>
+                {t('signup.terms.middle')}
+                <Link to="/privacy" target="_blank" rel="noopener noreferrer">{t('footer.privacy')}</Link>
+                {t('signup.terms.suffix')}
+              </span>
             </label>
             {fields.terms && <p className="err">{fields.terms}</p>}
           </div>

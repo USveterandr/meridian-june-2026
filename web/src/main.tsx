@@ -24,6 +24,8 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import Profile from './pages/Profile';
 import Analytics from './pages/Analytics';
 import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import NotFound from './pages/NotFound';
 import './styles.css';
 
@@ -43,6 +45,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="signup/success" element={<SignupSuccess />} />
               <Route path="pricing" element={<Pricing />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="terms" element={<Terms />} />
+              <Route path="privacy" element={<Privacy />} />
 
               {/* ── Requires auth only (no sub gate) ── */}
               <Route path="choose-plan" element={<RequireAuth><ChoosePlan /></RequireAuth>} />
