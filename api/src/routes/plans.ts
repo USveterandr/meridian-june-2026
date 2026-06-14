@@ -258,13 +258,13 @@ plans.post('/activate', requireAuth, async (c) => {
   return c.json({ success: true, planId, status, periodEnd, trial: status === 'trialing' });
 });
 
-// ─── Admin: seed/reset plans (4-tier catalog, mirrors seed-plans.sql) ─────
+// ─── Admin: seed/reset plans (5-tier catalog, mirrors seed-plans.sql) ─────
 plans.post('/seed', requireAuth, requireRole('admin'), async (c) => {
   const PLANS: Array<Omit<PlanRow, 'created_at'>> = [
     {
       id: 'free',
-      name: 'FREE Start',
-      description: 'List your property today — absolutely free. Pay only when you sell.',
+      name: 'Explorer',
+      description: 'Step inside for free. List your first property and browse every listing on the island — no card, no catch, no expiration.',
       price_monthly_cents: 0,
       price_annual_cents: 0,
       trial_days: 0,
@@ -273,59 +273,82 @@ plans.post('/seed', requireAuth, requireRole('admin'), async (c) => {
       grants_role: null,
       commission_pct: 3.0,
       features: JSON.stringify([
-        'users_1','listings_limit_1','photos_limit_12','buyer_id_basic',
-        'manual_contracts','email_support_72h',
+        'browse_listings','favorites_limit_5','basic_search','weekly_alerts',
+        'contact_agents','listings_limit_1','photos_limit_12',
       ]),
     },
     {
-      id: 'team',
-      name: 'TEAM Essentials',
-      description: 'Boost your team\'s reach and efficiency with advanced tools.',
-      price_monthly_cents: 14700,
-      price_annual_cents: 11760,
-      trial_days: 30,
+      id: 'pro',
+      name: 'Professional',
+      description: 'Stop giving away 3% of every sale. Unlimited listings, 0% commission, and a Verified badge that turns lookers into buyers.',
+      price_monthly_cents: 9700,
+      price_annual_cents: 7800,
+      trial_days: 7,
       public: 1,
       sort_order: 2,
       grants_role: 'seller',
-      commission_pct: 0.05,
+      commission_pct: 0,
       features: JSON.stringify([
-        'users_3','listings_limit_100','photos_limit_12','maps_geo_pin','storage_2gb',
-        'featured_1_month','verified_badge','buyer_verification_advanced',
-        'commission_protection_365','digital_contracts','lead_scoring','chat_support_24h',
+        'browse_listings','unlimited_favorites','advanced_search','daily_alerts',
+        'listings_limit_100','photos_limit_12','lead_notifications','agent_profile',
+        'basic_analytics','digital_contracts','verified_badge','google_maps_pin',
+        'featured_1_month','export_csv','email_support_24h',
       ]),
     },
     {
-      id: 'professional',
-      name: 'PROFESSIONAL Business',
-      description: 'Scale your brokerage with unlimited listings and 0% commission.',
-      price_monthly_cents: 69900,
-      price_annual_cents: 55920,
-      trial_days: 30,
+      id: 'brokerage',
+      name: 'Brokerage',
+      description: 'One dashboard. Every agent. Every lead. Brand it as your own and close faster than the competition can react.',
+      price_monthly_cents: 29900,
+      price_annual_cents: 24900,
+      trial_days: 14,
       public: 1,
       sort_order: 3,
       grants_role: 'broker',
       commission_pct: 0,
       features: JSON.stringify([
-        'users_12','unlimited_listings','photos_limit_18','maps_pro','storage_10gb',
-        'featured_3_months','biometric_verification','smart_contracts','escrow_integration',
-        'commission_protection_180','account_manager','extra_users_58',
+        'browse_listings','unlimited_favorites','advanced_search','daily_alerts',
+        'unlimited_listings','agent_accounts_10','team_crm','shared_leads',
+        'team_analytics','brokerage_branding','priority_support','lead_scoring',
+        'performance_analytics','featured_listings_3','shared_favorites',
+        'role_based_access','bulk_export','priority_chat_2h',
       ]),
     },
     {
       id: 'enterprise',
-      name: 'ENTERPRISE Solutions',
-      description: 'The ultimate real estate platform — custom built for market leaders.',
-      price_monthly_cents: 0,
-      price_annual_cents: 0,
-      trial_days: 30,
+      name: 'Enterprise',
+      description: 'White-label the entire platform — your logo, your domain, your rules. Built for institutions that define the market.',
+      price_monthly_cents: 59900,
+      price_annual_cents: 49900,
+      trial_days: 0,
       public: 1,
       sort_order: 4,
       grants_role: 'broker',
       commission_pct: 0,
       features: JSON.stringify([
-        'users_custom_25','unlimited_listings','photos_limit_24','sketch_3d','maps_enterprise',
-        'storage_20gb','vip_placement_6_months','ai_verification','blockchain_records',
-        'custom_contracts_branding','commission_protection_lifetime','support_24_7_legal',
+        'browse_listings','unlimited_favorites','advanced_search','daily_alerts',
+        'unlimited_listings','agent_accounts_50','advanced_team_mgmt','custom_integrations',
+        'api_access','white_label','advanced_reporting','account_manager',
+        'unlimited_featured','top_placement','sso_saml','dedicated_success_manager',
+        'white_glove_onboarding','sla_uptime',
+      ]),
+    },
+    {
+      id: 'investor',
+      name: 'Investor',
+      description: 'See the deal before it becomes a listing. Off-market access, instant ROI modeling, and cash-flow clarity for investors who move first.',
+      price_monthly_cents: 19900,
+      price_annual_cents: 16500,
+      trial_days: 7,
+      public: 1,
+      sort_order: 5,
+      grants_role: 'investor',
+      commission_pct: 0,
+      features: JSON.stringify([
+        'browse_listings','unlimited_favorites','advanced_search','priority_deal_alerts',
+        'investment_search','roi_calculator','market_analysis','portfolio_tracking_10',
+        'deal_analysis','comparative_analysis','cash_flow_projections','offmarket_deals',
+        'investor_network','sniper_mode','premium_support_30min','export_csv',
       ]),
     },
   ];
@@ -348,9 +371,9 @@ plans.post('/seed', requireAuth, requireRole('admin'), async (c) => {
       .run();
   }
 
-  // Hide legacy tiers without breaking existing subscriptions.
+  // Hide any legacy tiers without breaking existing subscriptions.
   await c.env.DB
-    .prepare(`UPDATE plans SET public = 0 WHERE id NOT IN ('free','team','professional','enterprise')`)
+    .prepare(`UPDATE plans SET public = 0 WHERE id NOT IN ('free','pro','brokerage','enterprise','investor')`)
     .run();
 
   return c.json({ seeded: PLANS.length });
