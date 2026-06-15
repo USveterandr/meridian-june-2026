@@ -19,7 +19,7 @@ database_id = "c1657807-0c44-49d1-9ae7-e62792af5b7c"
 [vars]
 # Comma-separated list of origins allowed to call this API.
 # Update these after deploying the frontend to Cloudflare Pages.
-ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-9st.pages.dev,https://meridian-mobile.pages.dev,https://investwithmeridian.com"
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-9st.pages.dev,https://meridian-mobile.pages.dev,https://investwithmeridian.com,https://investwithmeridian.isaac-trinidad.com"
 
 [observability]
 enabled = true
