@@ -1138,5 +1138,26 @@ describe('Meridian API Integration Tests', () => {
       const data2 = await res2.json();
       assert.strictEqual(data2.importedCount, 0);
     });
+
+    it('should report EveryListing as unconfigured when credentials are not set', async () => {
+      const res = await app.request('/api/scrape/everylisting/status', {
+        method: 'GET',
+        headers: getHeaders({ Authorization: `Bearer ${adminToken}` }),
+      }, env);
+
+      assert.strictEqual(res.status, 501);
+      const data = await res.json();
+      assert.strictEqual(data.configured, false);
+    });
+
+    it('should reject EveryListing import when credentials are not set', async () => {
+      const res = await app.request('/api/scrape/everylisting', {
+        method: 'POST',
+        headers: getHeaders({ Authorization: `Bearer ${adminToken}` }),
+        body: JSON.stringify({ amount: 5 }),
+      }, env);
+
+      assert.strictEqual(res.status, 501);
+    });
   });
 });

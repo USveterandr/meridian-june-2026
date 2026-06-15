@@ -9,7 +9,7 @@
     "db:init:local": "wrangler d1 execute meridian-db --local --file=./schema.sql",
     "db:init:remote": "wrangler d1 execute meridian-db --remote --file=./schema.sql",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/test/api.test.ts"
+    "test": "tsx --test src/test/api.test.ts src/test/everylisting.test.ts"
   },
   "dependencies": {
     "hono": "^4.6.14",

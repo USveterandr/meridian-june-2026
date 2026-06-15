@@ -7,6 +7,10 @@ export type Bindings = {
   STRIPE_SECRET_KEY?: string;
   /** Set via: npx wrangler secret put STRIPE_WEBHOOK_SECRET (whsec_...) */
   STRIPE_WEBHOOK_SECRET?: string;
+  /** EveryListing.com WWLS Pipes API — set via: npx wrangler secret put EVERYLISTING_API_USER */
+  EVERYLISTING_API_USER?: string;
+  /** EveryListing.com WWLS Pipes API — set via: npx wrangler secret put EVERYLISTING_API_PASS */
+  EVERYLISTING_API_PASS?: string;
 };
 
 export type AuthUser = { id: number; email: string; role: string };
