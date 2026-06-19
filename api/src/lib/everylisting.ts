@@ -196,7 +196,7 @@ export function normalizeEveryListingProperty(raw: EveryListingRawProperty): Scr
     country: 'DO',
     bedrooms: toNumber(raw.bedrooms) ?? 0,
     bathrooms: toNumber(raw.bathrooms) ?? 0,
-    areaM2: toNumber(raw.area ?? raw.living_area) ?? 0,
+    areaM2: toNumber(raw.area ?? raw.living_area),
     lotM2: toNumber(raw.lot_size ?? raw.land_area),
     features: [...toFeaturesArray(raw.features), ...toFeaturesArray(raw.amenities)],
   };

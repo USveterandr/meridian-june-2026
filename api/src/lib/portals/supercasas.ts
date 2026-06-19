@@ -80,7 +80,9 @@ function parsePrice(title3: string): { priceCents: number; currency: 'USD' | 'DO
 function parseFeatures(features: string[]) {
   let bedrooms = 0;
   let bathrooms = 0;
-  let areaM2 = 0;
+  // DB column allows NULL but rejects 0 (CHECK area_m2/lot_m2 IS NULL OR > 0) —
+  // default to null, not 0, when a listing has no usable measurement.
+  let areaM2: number | null = null;
   let lotM2: number | null = null;
   const extra: string[] = [];
 
@@ -88,7 +90,7 @@ function parseFeatures(features: string[]) {
     const num = parseFloat(f);
     if (/habitaci/i.test(f)) bedrooms = num || 0;
     else if (/baño/i.test(f)) bathrooms = num || 0;
-    else if (/mt2 construcci/i.test(f)) areaM2 = num || 0;
+    else if (/mt2 construcci/i.test(f)) areaM2 = num || null;
     else if (/mt2 (solar|terreno)/i.test(f)) lotM2 = num || null;
     else if (!/parqueo/i.test(f)) extra.push(f);
   }

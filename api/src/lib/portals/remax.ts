@@ -77,7 +77,7 @@ export function normalizeRemaxCard(card: RemaxCard): ScrapedProperty | null {
     country: 'DO',
     bedrooms: 0,
     bathrooms: 0,
-    areaM2: 0,
+    areaM2: null,
     lotM2: null,
     features: card.features ? card.features.split(',').map((s) => s.trim()).filter(Boolean) : [],
   };

@@ -14,11 +14,17 @@ class Logger {
 
   private format(level: LogLevel, message: string, data?: any) {
     const timestamp = new Date().toISOString();
+    // Error instances serialize to "{}" under plain JSON.stringify (message/
+    // stack aren't enumerable own properties) — unwrap them explicitly so
+    // error logs are actually useful.
+    const safeData = data && data.error instanceof Error
+      ? { ...data, error: { message: data.error.message, stack: data.error.stack } }
+      : data;
     const logObj = {
       timestamp,
       level: level.toUpperCase(),
       message,
-      ...data,
+      ...safeData,
     };
     // In Workers, JSON.stringify is the best way to ensure logs are structured
     // for log aggregators like Axiom or Cloudflare Logs.
