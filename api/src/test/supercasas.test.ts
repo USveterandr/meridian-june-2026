@@ -56,6 +56,11 @@ describe('parseSupercasasCards', () => {
     assert.strictEqual(cards[1].title2, 'Piantini');
     assert.strictEqual(cards[1].title3, 'US$ 3,000/Mes');
   });
+
+  it('upsizes the thumbnail photo URL to a larger size', () => {
+    const cards = parseSupercasasCards(REAL_CARD_HTML);
+    assert.strictEqual(cards[0].imageUrl, 'https://img.supercasas.com/AdsPhotos/800x600/5/10489484.jpg');
+  });
 });
 
 describe('normalizeSupercasasCard', () => {
@@ -71,6 +76,7 @@ describe('normalizeSupercasasCard', () => {
     assert.strictEqual(result?.bedrooms, 4);
     assert.strictEqual(result?.bathrooms, 4.5);
     assert.strictEqual(result?.areaM2, 546);
+    assert.strictEqual(result?.imageUrl, 'https://img.supercasas.com/AdsPhotos/800x600/5/10489484.jpg');
   });
 
   it('normalizes a monthly rental, keeping the monthly price as priceCents', () => {
@@ -84,14 +90,14 @@ describe('normalizeSupercasasCard', () => {
 
   it('rejects a card with no usable price', () => {
     const result = normalizeSupercasasCard({
-      href: null, title1: 'Apartamento / Venta', title2: 'Naco', title3: '', features: [],
+      href: null, title1: 'Apartamento / Venta', title2: 'Naco', title3: '', features: [], imageUrl: null,
     });
     assert.strictEqual(result, null);
   });
 
   it('rejects property types this portal scraper does not map', () => {
     const result = normalizeSupercasasCard({
-      href: null, title1: 'Tipo Desconocido / Venta', title2: 'Naco', title3: 'US$ 200,000', features: [],
+      href: null, title1: 'Tipo Desconocido / Venta', title2: 'Naco', title3: 'US$ 200,000', features: [], imageUrl: null,
     });
     assert.strictEqual(result, null);
   });

@@ -8,11 +8,11 @@ import {
 import { requireAuth, requireRole } from '../middleware/auth';
 import { rateLimit } from '../middleware/rateLimit';
 import { LISTING_ROLES, type AppEnv } from '../types';
+import { MAX_IMAGE_BYTES, sniffImageType } from '../lib/imageValidation';
 
 const properties = new Hono<AppEnv>();
 
 const MAX_IMAGES_PER_PROPERTY = 20;
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8 MB
 // SVG is deliberately excluded: SVGs can contain scripts (stored XSS).
 const IMAGE_TYPES: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -282,31 +282,30 @@ properties.post('/:id{[0-9]+}/images', requireAuth, rateLimit('upload', 60, 3600
   const form = await c.req.formData().catch(() => null);
   const file = (form?.get('file') ?? null) as unknown;
   if (!(file instanceof File)) return c.json({ error: 'Attach a photo in the "file" field.' }, 400);
-  const ext = IMAGE_TYPES[file.type];
-  if (!ext) return c.json({ error: 'Photos must be JPEG, PNG, or WebP.' }, 415);
+  if (!IMAGE_TYPES[file.type]) return c.json({ error: 'Photos must be JPEG, PNG, or WebP.' }, 415);
   if (file.size === 0 || file.size > MAX_IMAGE_BYTES) {
     return c.json({ error: 'Photos must be 8 MB or smaller.' }, 413);
   }
 
-  // Verify magic bytes — the Content-Type header is attacker-controlled.
+  // Trust sniffed magic bytes, not the (attacker-controlled) declared
+  // Content-Type, for both the rejection check and the stored extension —
+  // a mislabeled file would otherwise pass validation but be stored with
+  // a mismatched extension/content-type.
   const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
-  const isJpeg = head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff;
-  const isPng = head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47;
-  const isWebp = head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46
-    && head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50;
-  if (!(isJpeg || isPng || isWebp)) return c.json({ error: 'This file does not look like a valid photo.' }, 415);
+  const sniffed = sniffImageType(head);
+  if (!sniffed) return c.json({ error: 'This file does not look like a valid photo.' }, 415);
 
   // Random, server-generated key: user-supplied filenames never touch R2
   // (prevents path traversal and key collisions).
-  const key = `properties/${id}/${crypto.randomUUID()}.${ext}`;
-  await c.env.ASSETS.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
+  const key = `properties/${id}/${crypto.randomUUID()}.${sniffed.ext}`;
+  await c.env.ASSETS.put(key, file.stream(), { httpMetadata: { contentType: sniffed.contentType } });
 
   const posRow = await c.env.DB.prepare(
     'SELECT COALESCE(MAX(position), -1) + 1 AS p FROM property_images WHERE property_id = ?'
   ).bind(id).first<{ p: number }>();
   const image = await c.env.DB.prepare(
     'INSERT INTO property_images (property_id, r2_key, content_type, position) VALUES (?,?,?,?) RETURNING id, r2_key, position'
-  ).bind(id, key, file.type, posRow?.p ?? 0).first<ImageRow>();
+  ).bind(id, key, sniffed.contentType, posRow?.p ?? 0).first<ImageRow>();
   if (!image) return c.json({ error: 'The photo could not be saved. Please try again.' }, 500);
   return c.json({ image: { id: image.id, url: `/api/assets/${image.r2_key}`, position: image.position } }, 201);
 });
