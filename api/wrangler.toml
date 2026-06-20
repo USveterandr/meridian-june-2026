@@ -11,9 +11,9 @@ binding = "DB"
 database_name = "meridian-db"
 database_id = "c1657807-0c44-49d1-9ae7-e62792af5b7c"
 
-# [[r2_buckets]]      ← Uncomment after enabling R2 in Cloudflare Dashboard
-# binding = "ASSETS"
-# bucket_name = "meridian-assets"
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "meridian-assets"
 
 
 [vars]

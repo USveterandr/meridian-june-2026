@@ -10,7 +10,7 @@ export interface ScrapedProperty {
   country: string;
   bedrooms: number;
   bathrooms: number;
-  areaM2: number;
+  areaM2: number | null; // DB column allows NULL but rejects 0 (CHECK area_m2 IS NULL OR area_m2 > 0)
   lotM2: number | null;
   features: string[];
 }

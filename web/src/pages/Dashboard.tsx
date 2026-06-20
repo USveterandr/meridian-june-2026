@@ -24,6 +24,8 @@ export default function Dashboard() {
   const [scraping, setScraping] = useState(false);
   const [scrapeResult, setScrapeResult] = useState<string | null>(null);
   const [minPrice, setMinPrice] = useState(100000);
+  const [portalScraping, setPortalScraping] = useState<string | null>(null);
+  const [portalResult, setPortalResult] = useState<string | null>(null);
 
   const canList = canListProperties(user?.role);
   const isAdmin = user?.role === 'admin';
@@ -65,6 +67,21 @@ export default function Dashboard() {
         ? 'Error al ejecutar el scraper. Por favor intente de nuevo.'
         : 'Error executing the scraper. Please try again.');
     } finally { setScraping(false); }
+  }
+
+  async function triggerPortalScrape(portal: 'supercasas' | 'remax' | 'century21') {
+    setPortalScraping(portal); setPortalResult(null);
+    try {
+      const res = await api.post<{ importedCount: number; fetched: number; message: string }>(`/api/scrape/${portal}`, {});
+      setPortalResult(lang === 'es'
+        ? `${portal}: se importaron ${res.importedCount} de ${res.fetched} propiedades encontradas.`
+        : `${portal}: imported ${res.importedCount} of ${res.fetched} listings found.`);
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : undefined;
+      setPortalResult(lang === 'es'
+        ? `${portal}: error — ${detail ?? 'intente de nuevo.'}`
+        : `${portal}: error — ${detail ?? 'please try again.'}`);
+    } finally { setPortalScraping(null); }
   }
 
   // ── Subscription derived values ──────────────────────────────────────────
@@ -380,6 +397,34 @@ export default function Dashboard() {
             </div>
             {scrapeResult && (
               <div className="alert ok" style={{ marginTop: 20, marginBottom: 0 }}>{scrapeResult}</div>
+            )}
+          </div>
+        )}
+
+        {/* ── Admin DR portal scrapers (ScrapingBee) ── */}
+        {isAdmin && (
+          <div className="cta-panel" style={{ marginTop: 24, textAlign: 'left' }}>
+            <h2 className="gold" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              🌐 {lang === 'es' ? 'Scrapers de Portales DR' : 'DR Portal Scrapers'}
+            </h2>
+            <p className="lede" style={{ fontSize: '0.95rem', marginBottom: 24 }}>
+              {lang === 'es'
+                ? 'Importa listados en vivo vía ScrapingBee. supercasas.com está verificado; remax y century21 son borradores sin verificar.'
+                : 'Imports live listings via ScrapingBee. supercasas.com is verified; remax and century21 are unverified drafts.'}
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {(['supercasas', 'remax', 'century21'] as const).map((portal) => (
+                <button key={portal} className="btn gold" disabled={portalScraping !== null}
+                  onClick={() => triggerPortalScrape(portal)}
+                  style={{ height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {portalScraping === portal
+                    ? (lang === 'es' ? 'Importando...' : 'Importing...')
+                    : portal}
+                </button>
+              ))}
+            </div>
+            {portalResult && (
+              <div className="alert ok" style={{ marginTop: 20, marginBottom: 0 }}>{portalResult}</div>
             )}
           </div>
         )}

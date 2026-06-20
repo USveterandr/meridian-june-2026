@@ -2,6 +2,9 @@ import { Hono } from 'hono';
 import { requireAuth, requireRole } from '../middleware/auth';
 import { importListings, importScrapedProperties } from '../lib/scraper';
 import { fetchAndNormalizeEveryListingProperties, fetchEveryListingStatus } from '../lib/everylisting';
+import { fetchSupercasasListings, SUPERCASAS_CATEGORY_URLS, type SupercasasCategory } from '../lib/portals/supercasas';
+import { fetchRemaxListings } from '../lib/portals/remax';
+import { fetchCentury21Listings } from '../lib/portals/century21';
 import type { AppEnv } from '../types';
 import { logger } from '../lib/logger';
 
@@ -88,6 +91,89 @@ scrape.post('/everylisting', requireAuth, requireRole('admin'), async (c) => {
   } catch (err) {
     logger.error('EveryListing scrape failed', { error: err });
     return c.json({ error: 'Failed to import EveryListing properties.' }, 502);
+  }
+});
+
+// ─── ScrapingBee-backed DR portal scrapers ────────────────────────────────
+// Pulls JS-rendered listing grids from DR real estate portals via
+// ScrapingBee, then normalizes and imports qualifying properties. Requires
+// the SCRAPINGBEE_API_KEY secret — see lib/scrapingbee.ts.
+// supercasas.com selectors are confirmed against a real response;
+// remax.com.do and century21dominicana.com are unverified scaffolds — see
+// lib/portals/remax.ts and lib/portals/century21.ts before running those.
+
+scrape.get('/portals/status', requireAuth, requireRole('admin'), async (c) => {
+  const apiKey = c.env.SCRAPINGBEE_API_KEY;
+  return c.json({
+    configured: Boolean(apiKey),
+    error: apiKey ? undefined : 'SCRAPINGBEE_API_KEY is not set.',
+  });
+});
+
+scrape.post('/supercasas', requireAuth, requireRole('admin'), async (c) => {
+  const apiKey = c.env.SCRAPINGBEE_API_KEY;
+  if (!apiKey) return c.json({ error: 'ScrapingBee is not configured. Set SCRAPINGBEE_API_KEY.' }, 501);
+
+  const body = await c.req.json().catch(() => ({}));
+  const category = (body.category ?? c.req.query('category') ?? 'apartamentos') as SupercasasCategory;
+  if (!(category in SUPERCASAS_CATEGORY_URLS)) {
+    return c.json({ error: `Unknown supercasas category "${category}".` }, 400);
+  }
+
+  const user = c.get('user');
+  try {
+    const listings = await fetchSupercasasListings(apiKey, category);
+    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    return c.json({
+      success: true,
+      category,
+      fetched: listings.length,
+      importedCount,
+      message: `Imported ${importedCount} of ${listings.length} supercasas.com listings.`,
+    });
+  } catch (err) {
+    logger.error('supercasas.com scrape failed', { error: err });
+    return c.json({ error: 'Failed to import supercasas.com listings.' }, 502);
+  }
+});
+
+scrape.post('/remax', requireAuth, requireRole('admin'), async (c) => {
+  const apiKey = c.env.SCRAPINGBEE_API_KEY;
+  if (!apiKey) return c.json({ error: 'ScrapingBee is not configured. Set SCRAPINGBEE_API_KEY.' }, 501);
+
+  const user = c.get('user');
+  try {
+    const listings = await fetchRemaxListings(apiKey);
+    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    return c.json({
+      success: true,
+      fetched: listings.length,
+      importedCount,
+      message: `Imported ${importedCount} of ${listings.length} remax.com.do listings.`,
+    });
+  } catch (err) {
+    logger.error('remax.com.do scrape failed', { error: err });
+    return c.json({ error: 'Failed to import remax.com.do listings.' }, 502);
+  }
+});
+
+scrape.post('/century21', requireAuth, requireRole('admin'), async (c) => {
+  const apiKey = c.env.SCRAPINGBEE_API_KEY;
+  if (!apiKey) return c.json({ error: 'ScrapingBee is not configured. Set SCRAPINGBEE_API_KEY.' }, 501);
+
+  const user = c.get('user');
+  try {
+    const listings = await fetchCentury21Listings(apiKey);
+    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    return c.json({
+      success: true,
+      fetched: listings.length,
+      importedCount,
+      message: `Imported ${importedCount} of ${listings.length} century21dominicana.com listings.`,
+    });
+  } catch (err) {
+    logger.error('century21dominicana.com scrape failed', { error: err });
+    return c.json({ error: 'Failed to import century21dominicana.com listings.' }, 502);
   }
 });
 

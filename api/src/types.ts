@@ -11,6 +11,8 @@ export type Bindings = {
   EVERYLISTING_API_USER?: string;
   /** EveryListing.com WWLS Pipes API — set via: npx wrangler secret put EVERYLISTING_API_PASS */
   EVERYLISTING_API_PASS?: string;
+  /** ScrapingBee (JS-rendered HTML for DR portal scrapers) — set via: npx wrangler secret put SCRAPINGBEE_API_KEY */
+  SCRAPINGBEE_API_KEY?: string;
 };
 
 export type AuthUser = { id: number; email: string; role: string };
