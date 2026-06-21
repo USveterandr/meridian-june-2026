@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { AppEnv } from '../types';
 import { MUNICIPIOS } from '../lib/municipios';
+import { TOWNS } from '../lib/towns';
 
 const territories = new Hono<AppEnv>();
 
@@ -76,6 +77,20 @@ territories.get('/municipalities', (c) => {
   const provinceCode = c.req.query('provinceCode') ?? '';
   if (!provinceCode) return c.json({ error: 'provinceCode is required.' }, 400);
   return c.json(MUNICIPIOS.filter((m) => m.provinceCode === provinceCode));
+});
+
+// ── Towns / Sectors ───────────────────────────────────────────────────────
+// Distrito-municipal-level granularity (e.g. "Las Galeras" under Samaná),
+// also bundled statically — see api/src/lib/towns.ts.
+territories.get('/towns', (c) => {
+  const provinceCode = c.req.query('provinceCode') ?? '';
+  const municipioCode = c.req.query('municipioCode') ?? '';
+  if (!provinceCode || !municipioCode) {
+    return c.json({ error: 'provinceCode and municipioCode are required.' }, 400);
+  }
+  return c.json(
+    TOWNS.filter((t) => t.provinceCode === provinceCode && t.municipioCode === municipioCode)
+  );
 });
 
 export default territories;

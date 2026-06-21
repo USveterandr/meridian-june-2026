@@ -12,23 +12,35 @@ interface Municipality {
   identifier: string;
   provinceCode: string;
 }
+interface Town {
+  name: string;
+  code: string;
+  identifier: string;
+  municipioCode: string;
+  provinceCode: string;
+}
 
 interface TerritoryPickerProps {
-  /** Called when the user selects a final municipality */
-  onSelect: (opts: { region?: string; province: string; municipality: string; provinceCode: string }) => void;
+  /** Called when the user selects a final municipality/town */
+  onSelect: (opts: { region?: string; province: string; municipality: string; town?: string; provinceCode: string }) => void;
   /** Placeholder values (for edit forms) */
   defaultProvince?: string;
   defaultMunicipality?: string;
+  defaultTown?: string;
 }
 
-export default function TerritoryPicker({ onSelect, defaultProvince = '', defaultMunicipality = '' }: TerritoryPickerProps) {
+export default function TerritoryPicker({ onSelect, defaultProvince = '', defaultMunicipality = '', defaultTown = '' }: TerritoryPickerProps) {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+  const [towns, setTowns] = useState<Town[]>([]);
   const [provinceCode, setProvinceCode] = useState('');
+  const [municipioCode, setMunicipioCode] = useState('');
   const [province, setProvince] = useState(defaultProvince);
   const [municipality, setMunicipality] = useState(defaultMunicipality);
+  const [town, setTown] = useState(defaultTown);
   const [loadingP, setLoadingP] = useState(false);
   const [loadingM, setLoadingM] = useState(false);
+  const [loadingT, setLoadingT] = useState(false);
 
   // Load provinces once on mount
   useEffect(() => {
@@ -53,21 +65,45 @@ export default function TerritoryPicker({ onSelect, defaultProvince = '', defaul
       .finally(() => setLoadingM(false));
   }, [provinceCode]);
 
+  // Load towns/sectors when municipality changes
+  useEffect(() => {
+    if (!provinceCode || !municipioCode) { setTowns([]); return; }
+    setLoadingT(true);
+    api.get<Town[] | { error: string }>(`/api/territories/towns?provinceCode=${provinceCode}&municipioCode=${municipioCode}`)
+      .then((d) => {
+        if (Array.isArray(d)) setTowns(d);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingT(false));
+  }, [provinceCode, municipioCode]);
+
   const handleProvince = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     const opt = e.target.selectedOptions[0];
     const code = opt?.dataset.code ?? '';
     const name = opt?.textContent ?? '';
     setProvinceCode(code);
     setProvince(name);
+    setMunicipioCode('');
     setMunicipality('');
-    onSelect({ province: name, municipality: '', provinceCode: code });
+    setTown('');
+    onSelect({ province: name, municipality: '', town: '', provinceCode: code });
   }, [onSelect]);
 
   const handleMunicipality = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const name = e.target.selectedOptions[0]?.textContent ?? '';
+    const opt = e.target.selectedOptions[0];
+    const code = opt?.dataset.code ?? '';
+    const name = opt?.textContent ?? '';
+    setMunicipioCode(code);
     setMunicipality(name);
-    onSelect({ province, municipality: name, provinceCode });
+    setTown('');
+    onSelect({ province, municipality: name, town: '', provinceCode });
   }, [onSelect, province, provinceCode]);
+
+  const handleTown = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const name = e.target.selectedOptions[0]?.textContent ?? '';
+    setTown(name);
+    onSelect({ province, municipality, town: name, provinceCode });
+  }, [onSelect, province, municipality, provinceCode]);
 
   return (
     <div className="territory-picker">
@@ -95,7 +131,7 @@ export default function TerritoryPicker({ onSelect, defaultProvince = '', defaul
             type="text"
             placeholder="Type province name"
             value={province}
-            onChange={(e) => { setProvince(e.target.value); onSelect({ province: e.target.value, municipality, provinceCode }); }}
+            onChange={(e) => { setProvince(e.target.value); onSelect({ province: e.target.value, municipality, town, provinceCode }); }}
             maxLength={80}
             style={{ marginTop: 8 }}
           />
@@ -116,7 +152,7 @@ export default function TerritoryPicker({ onSelect, defaultProvince = '', defaul
             >
               <option value="">{loadingM ? 'Loading…' : 'Select a municipality'}</option>
               {municipalities.map((m) => (
-                <option key={m.code} value={m.name}>
+                <option key={m.code} value={m.name} data-code={m.code}>
                   {m.name}
                 </option>
               ))}
@@ -129,9 +165,44 @@ export default function TerritoryPicker({ onSelect, defaultProvince = '', defaul
               type="text"
               placeholder="Type municipality name"
               value={municipality}
-              onChange={(e) => { setMunicipality(e.target.value); onSelect({ province, municipality: e.target.value, provinceCode }); }}
+              onChange={(e) => { setMunicipality(e.target.value); onSelect({ province, municipality: e.target.value, town, provinceCode }); }}
               maxLength={80}
               style={{ marginTop: provinceCode ? 8 : 0 }}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Town / Sector */}
+      {(municipioCode || (municipality && !provinceCode)) && (
+        <div className="field">
+          <label htmlFor="tp-town">Town / Sector — Pueblo / Sector</label>
+          {municipioCode && (
+            <select
+              id="tp-town"
+              value={town}
+              onChange={handleTown}
+              disabled={loadingT}
+              aria-label="Select town or sector"
+            >
+              <option value="">{loadingT ? 'Loading…' : 'Select a town/sector'}</option>
+              {towns.map((t) => (
+                <option key={t.code} value={t.name}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {/* Freeform fallback — used when the municipality itself is freeform, or
+              when the town lookup came back empty. */}
+          {!loadingT && (!municipioCode || towns.length === 0) && (
+            <input
+              type="text"
+              placeholder="Type town/sector name"
+              value={town}
+              onChange={(e) => { setTown(e.target.value); onSelect({ province, municipality, town: e.target.value, provinceCode }); }}
+              maxLength={80}
+              style={{ marginTop: municipioCode ? 8 : 0 }}
             />
           )}
         </div>

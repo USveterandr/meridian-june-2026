@@ -7,6 +7,8 @@ import TerritoryPicker from '../components/TerritoryPicker';
 
 const TYPES = ['house', 'apartment', 'condo', 'villa', 'land', 'commercial'] as const;
 const FEATURES = ['ac', 'pool', 'balcony', 'garden', 'oceanview', 'furnished', 'gated', 'washer', 'dishwasher', 'heating', 'fireplace'] as const;
+// Land has no structure, so only outdoor/site characteristics apply.
+const LAND_FEATURES: readonly (typeof FEATURES)[number][] = ['garden', 'oceanview', 'gated'];
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -30,8 +32,21 @@ export default function NewListing() {
   const editingId = editId && /^\d+$/.test(editId) ? Number(editId) : null;
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const isLand = form.propertyType === 'land';
+
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
+  }
+
+  function setPropertyType(v: string) {
+    setForm((f) => ({
+      ...f,
+      propertyType: v,
+      ...(v === 'land' ? { bedrooms: '0', bathrooms: '0', yearBuilt: '' } : {}),
+    }));
+    if (v === 'land') {
+      setChecked((s) => new Set([...s].filter((k) => (LAND_FEATURES as readonly string[]).includes(k))));
+    }
   }
   function toggleFeature(key: string) {
     setChecked((s) => {
@@ -247,7 +262,7 @@ export default function NewListing() {
                 </div>
                 <div className="field">
                   <label htmlFor="pt">{t('new.propertyType')}</label>
-                  <select id="pt" value={form.propertyType} onChange={(e) => set('propertyType', e.target.value)}>
+                  <select id="pt" value={form.propertyType} onChange={(e) => setPropertyType(e.target.value)}>
                     {TYPES.map((ty) => <option key={ty} value={ty}>{t(`type.${ty}` as Parameters<typeof t>[0])}</option>)}
                   </select>
                 </div>
@@ -270,7 +285,7 @@ export default function NewListing() {
               </div>
               <TerritoryPicker
                 defaultMunicipality={form.city}
-                onSelect={({ municipality }) => set('city', municipality)}
+                onSelect={({ municipality, town }) => set('city', town ? `${town}, ${municipality}` : municipality)}
               />
               {fields.city && <p className="err">{fields.city}</p>}
             </>
@@ -278,16 +293,18 @@ export default function NewListing() {
 
           {step === 2 && (
             <>
-              <div className="form-row">
-                <div className="field">
-                  <label htmlFor="beds">{t('new.beds')}</label>
-                  <input id="beds" type="number" min={0} max={50} value={form.bedrooms} onChange={(e) => set('bedrooms', e.target.value)} />
+              {!isLand && (
+                <div className="form-row">
+                  <div className="field">
+                    <label htmlFor="beds">{t('new.beds')}</label>
+                    <input id="beds" type="number" min={0} max={50} value={form.bedrooms} onChange={(e) => set('bedrooms', e.target.value)} />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="baths">{t('new.baths')}</label>
+                    <input id="baths" type="number" min={0} max={50} step={0.5} value={form.bathrooms} onChange={(e) => set('bathrooms', e.target.value)} />
+                  </div>
                 </div>
-                <div className="field">
-                  <label htmlFor="baths">{t('new.baths')}</label>
-                  <input id="baths" type="number" min={0} max={50} step={0.5} value={form.bathrooms} onChange={(e) => set('bathrooms', e.target.value)} />
-                </div>
-              </div>
+              )}
               <div className="form-row">
                 <div className="field">
                   <label htmlFor="area">{t('new.sqm')}</label>
@@ -300,11 +317,13 @@ export default function NewListing() {
                   {fields.lotM2 && <p className="err">{fields.lotM2}</p>}
                 </div>
               </div>
-              <div className="field">
-                <label htmlFor="year">{t('new.year')}</label>
-                <input id="year" type="number" min={1800} max={2100} value={form.yearBuilt} onChange={(e) => set('yearBuilt', e.target.value)} />
-                {fields.yearBuilt && <p className="err">{fields.yearBuilt}</p>}
-              </div>
+              {!isLand && (
+                <div className="field">
+                  <label htmlFor="year">{t('new.year')}</label>
+                  <input id="year" type="number" min={1800} max={2100} value={form.yearBuilt} onChange={(e) => set('yearBuilt', e.target.value)} />
+                  {fields.yearBuilt && <p className="err">{fields.yearBuilt}</p>}
+                </div>
+              )}
               <div className="field">
                 <label htmlFor="desc">{t('new.description')}</label>
                 <textarea
@@ -325,7 +344,7 @@ export default function NewListing() {
               <div className="field">
                 <label>{t('detail.features')} — {t('new.featuresHint')}</label>
                 <div className="checkgrid">
-                  {FEATURES.map((f) => (
+                  {(isLand ? LAND_FEATURES : FEATURES).map((f) => (
                     <label key={f}>
                       <input type="checkbox" checked={checked.has(f)} onChange={() => toggleFeature(f)} />
                       {t(`feat.${f}` as Parameters<typeof t>[0])}
