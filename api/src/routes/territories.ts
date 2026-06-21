@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { AppEnv } from '../types';
+import { MUNICIPIOS } from '../lib/municipios';
 
 const territories = new Hono<AppEnv>();
 
@@ -68,19 +69,13 @@ territories.get('/provinces', async (c) => {
 });
 
 // ── Municipalities ─────────────────────────────────────────────────────────
-// The upstream API has no per-province municipalities endpoint — it only
-// exposes the full national list, so we cache that once and filter here.
-territories.get('/municipalities', async (c) => {
+// Served from a bundled static dataset (api/src/lib/municipios.ts) rather
+// than the upstream DR Gov API: that API is missing municipio data for 11 of
+// the 32 provinces and has no per-province endpoint at all.
+territories.get('/municipalities', (c) => {
   const provinceCode = c.req.query('provinceCode') ?? '';
   if (!provinceCode) return c.json({ error: 'provinceCode is required.' }, 400);
-
-  try {
-    const all = await proxyWithCache(c.env.DB, 'municipalities_all', `${DR_GOV_BASE}/municipalities`);
-    const filtered = (all as Array<{ provinceCode?: string }>).filter((m) => m.provinceCode === provinceCode);
-    return c.json(filtered);
-  } catch {
-    return c.json({ error: 'Could not load municipalities.' }, 502);
-  }
+  return c.json(MUNICIPIOS.filter((m) => m.provinceCode === provinceCode));
 });
 
 export default territories;
