@@ -5,7 +5,8 @@ const territories = new Hono<AppEnv>();
 
 const DR_GOV_BASE = 'https://api.digital.gob.do/v1/territories';
 
-// Generic proxy helper — fetches from DR Gov API, caches in D1
+// Generic proxy helper — fetches from DR Gov API, caches in D1.
+// The upstream API always wraps payloads as { valid: boolean, data: T }.
 async function proxyWithCache(
   db: AppEnv['Bindings']['DB'],
   cacheKey: string,
@@ -26,7 +27,8 @@ async function proxyWithCache(
 
   const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!res.ok) throw new Error(`DR Gov API returned ${res.status}`);
-  const data = await res.json() as unknown[];
+  const body = await res.json() as { data?: unknown[] };
+  const data = Array.isArray(body.data) ? body.data : [];
 
   // Upsert into cache
   await db
@@ -66,15 +68,16 @@ territories.get('/provinces', async (c) => {
 });
 
 // ── Municipalities ─────────────────────────────────────────────────────────
+// The upstream API has no per-province municipalities endpoint — it only
+// exposes the full national list, so we cache that once and filter here.
 territories.get('/municipalities', async (c) => {
   const provinceCode = c.req.query('provinceCode') ?? '';
   if (!provinceCode) return c.json({ error: 'provinceCode is required.' }, 400);
-  const key = `municipalities_${provinceCode}`;
-  const url = `${DR_GOV_BASE}/provinces/${provinceCode}/municipalities`;
 
   try {
-    const data = await proxyWithCache(c.env.DB, key, url);
-    return c.json(data);
+    const all = await proxyWithCache(c.env.DB, 'municipalities_all', `${DR_GOV_BASE}/municipalities`);
+    const filtered = (all as Array<{ provinceCode?: string }>).filter((m) => m.provinceCode === provinceCode);
+    return c.json(filtered);
   } catch {
     return c.json({ error: 'Could not load municipalities.' }, 502);
   }

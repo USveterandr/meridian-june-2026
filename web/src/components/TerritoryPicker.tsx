@@ -106,29 +106,32 @@ export default function TerritoryPicker({ onSelect, defaultProvince = '', defaul
       {(provinceCode || province) && (
         <div className="field">
           <label htmlFor="tp-municipality">Municipality / Municipio</label>
-          <select
-            id="tp-municipality"
-            value={municipality}
-            onChange={handleMunicipality}
-            disabled={loadingM || !provinceCode}
-            aria-label="Select municipality"
-          >
-            <option value="">{loadingM ? 'Loading…' : 'Select a municipality'}</option>
-            {municipalities.map((m) => (
-              <option key={m.code} value={m.name}>
-                {m.name}
-              </option>
-            ))}
-          </select>
-          {/* Freeform fallback */}
-          {!loadingM && municipalities.length === 0 && provinceCode && (
+          {provinceCode && (
+            <select
+              id="tp-municipality"
+              value={municipality}
+              onChange={handleMunicipality}
+              disabled={loadingM}
+              aria-label="Select municipality"
+            >
+              <option value="">{loadingM ? 'Loading…' : 'Select a municipality'}</option>
+              {municipalities.map((m) => (
+                <option key={m.code} value={m.name}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {/* Freeform fallback — used when the province itself is freeform (no code to
+              look up municipalities by) or when the municipality lookup came back empty. */}
+          {!loadingM && (!provinceCode || municipalities.length === 0) && (
             <input
               type="text"
               placeholder="Type municipality name"
               value={municipality}
               onChange={(e) => { setMunicipality(e.target.value); onSelect({ province, municipality: e.target.value, provinceCode }); }}
               maxLength={80}
-              style={{ marginTop: 8 }}
+              style={{ marginTop: provinceCode ? 8 : 0 }}
             />
           )}
         </div>
