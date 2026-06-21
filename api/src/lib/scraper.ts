@@ -1,3 +1,6 @@
+import { MAX_IMAGE_BYTES, sniffImageType } from './imageValidation';
+import { logger } from './logger';
+
 export interface ScrapedProperty {
   title: string;
   description: string;
@@ -13,6 +16,8 @@ export interface ScrapedProperty {
   areaM2: number | null; // DB column allows NULL but rejects 0 (CHECK area_m2 IS NULL OR area_m2 > 0)
   lotM2: number | null;
   features: string[];
+  /** Source photo URL, if the scraper captured one. Falls back to a placeholder when absent or unfetchable. */
+  imageUrl?: string;
 }
 
 // Curated luxury real estate listings from the Dominican Republic
@@ -551,8 +556,38 @@ export const CRAWLED_DR_PROPERTIES: ScrapedProperty[] = [
   },
 ];
 
-// 12-byte valid PNG magic bytes header
-const MOCK_PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+// Branded "no photo available" placeholder (the interlocking-rings mark on
+// the dark brand background) — used whenever a scraper has no source photo,
+// or the source photo can't be fetched/validated. This is a real, complete
+// PNG (unlike the old 12-byte magic-bytes-only stub this replaced, which
+// rendered as a broken image in every browser).
+const PLACEHOLDER_PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAIAAAABgBAMAAAAnVGd6AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAtUExURQwPEjIsGzMwI1JHKIR3TqmVWe3Lb/XbjtezUm5cKqmHNJB2M8ebNVNJK6V/Kiojj3EAAAABYktHRACIBR1IAAAAB3RJTUUH6gYUDiETKY/eGwAAAtRJREFUWMPtlc9L22AYx9+2ExrKIIkwWN0hVqYyPGQLOG09jIEbu4lzyNhtTtt5nSX1PCi19dDhZJv2YCmIy4IowlDrRU/aFv+GHQfzj9i7pkm+b/rG3SUfRPLhfZ7nfd4fTQgJCAgICAi42YQGNO2R+F/xo3cyresLC5mZh9eK7+zruv7qxdr458l85rXkK75dhGf1GcV6lDfyaUfCjKznS4pffu4pFlsUuULunpf4PTzPqSBZbWeFK4REzld4+ff1MspLLVmoOjLgiFWh2p0f0adR3tTr9eNVtUss+lA6fFnqlq8fu6QDI21u609Qyp1W6UQCio1Q8LYwhA08ztUtzs884rZwxuaH0lMo05pFqsgKtFBkC/TkULLO404Z5BCOiY6wK/iAK1iWE4mERP+kidOhZVmSpYQsSf2VUwgaOWUKzE6hlAyb4yaI0YSgWAnzw7rKl0hLV0VHGiJEoRABt0DIgvxGucKzM1F68BB7st9ctlHMPQiroERxD6NLkPMTC5xsQdjEL5A7cyhvQQZR4lhgZMsvjJFRLP0Af4Txqm+BRffgjG0Uw7cAu4Q5ifLvGlFG30suSez6Hkp0zk8GUUZw35hNvPUOj3FeczlEOSnjMaII8yiZuovJiAphzK0K5VUUxX02GBEJXwh5tsUX4QIkdoF9otC9wnfccMlp+rg6iOJ3irQ4bkIs42ybUWYEgpgNpeT3UOzByK5H3BVcsvlkeIURuX1x+pNVjzgkvZ+WSKGM0rTeR4YK0lAgwlA8BcgYtjBmva82al1iN1Dz5tOJ8ONX2Kf/+6xpbBHd8b5LsasAieP3Lr5K3x9X+xxpl0RxqRShQqVgmDWu0Et4UuPlk9Bh8RMEtZoiyA+3596r7yLhV6isHnWGQinTbB0pfPHLp6RajT9rmja+aTYOqLR85BrCm2aLstuez5YDxTtyLfS7KKH080cCAgICAgJuKH8BzDCFfXRQiOMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMDYtMjBUMTQ6MzM6MDArMDA6MDAY7vFEAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTA2LTIwVDE0OjMzOjAwKzAwOjAwabNJ+AAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0wNi0yMFQxNDozMzoxOSswMDowMGeULWoAAAAASUVORK5CYII=';
+
+function decodePlaceholder(): Uint8Array {
+  const raw = atob(PLACEHOLDER_PNG_BASE64);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  return bytes;
+}
+
+/** Fetches a scraper-supplied photo URL and validates it's a real image. Returns null on any failure — caller falls back to the placeholder. */
+async function fetchExternalImage(
+  url: string
+): Promise<{ bytes: Uint8Array; ext: 'jpg' | 'png' | 'webp'; contentType: string } | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const buf = await res.arrayBuffer();
+    if (buf.byteLength === 0 || buf.byteLength > MAX_IMAGE_BYTES) return null;
+    const bytes = new Uint8Array(buf);
+    const sniffed = sniffImageType(bytes);
+    if (!sniffed) return null;
+    return { bytes, ...sniffed };
+  } catch {
+    return null;
+  }
+}
 
 export async function importListings(
   db: any,
@@ -565,7 +600,7 @@ export async function importListings(
   return importScrapedProperties(db, assets, items, ownerId);
 }
 
-/** Inserts a list of already-normalized properties, skipping duplicates by title. */
+/** Inserts a list of already-normalized properties, skipping duplicates by title. A failure on one item (e.g. its photo can't be uploaded) is logged and skipped rather than aborting the rest of the batch. */
 export async function importScrapedProperties(
   db: any,
   assets: any,
@@ -575,60 +610,64 @@ export async function importScrapedProperties(
   let count = 0;
 
   for (const item of items) {
-    // 1. Check if already exists (prevent duplicate imports)
-    const existing = await db
-      .prepare('SELECT id FROM properties WHERE title = ?')
-      .bind(item.title)
-      .first();
-    if (existing) continue;
+    try {
+      // 1. Check if already exists (prevent duplicate imports)
+      const existing = await db
+        .prepare('SELECT id FROM properties WHERE title = ?')
+        .bind(item.title)
+        .first();
+      if (existing) continue;
 
-    // 3. Insert property listing
-    const inserted = await db
-      .prepare(
-        `INSERT INTO properties
-           (owner_id, title, description, property_type, listing_type, price_cents, currency,
-            address, city, country, bedrooms, bathrooms, area_m2, lot_m2, features, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active') RETURNING id`
-      )
-      .bind(
-        ownerId,
-        item.title,
-        item.description,
-        item.propertyType,
-        item.listingType,
-        item.priceCents,
-        item.currency,
-        item.address,
-        item.city,
-        item.country,
-        item.bedrooms,
-        item.bathrooms,
-        item.areaM2,
-        item.lotM2,
-        JSON.stringify(item.features)
-      )
-      .first() as unknown as { id: number } | null;
+      // 2. Insert property listing
+      const inserted = await db
+        .prepare(
+          `INSERT INTO properties
+             (owner_id, title, description, property_type, listing_type, price_cents, currency,
+              address, city, country, bedrooms, bathrooms, area_m2, lot_m2, features, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active') RETURNING id`
+        )
+        .bind(
+          ownerId,
+          item.title,
+          item.description,
+          item.propertyType,
+          item.listingType,
+          item.priceCents,
+          item.currency,
+          item.address,
+          item.city,
+          item.country,
+          item.bedrooms,
+          item.bathrooms,
+          item.areaM2,
+          item.lotM2,
+          JSON.stringify(item.features)
+        )
+        .first() as unknown as { id: number } | null;
 
+      if (!inserted?.id) continue;
 
-    if (inserted?.id) {
-      // 4. Upload mock PNG cover to R2
-      const uuid = crypto.randomUUID();
-      const r2Key = `properties/${inserted.id}/${uuid}.png`;
-      
-      // Store in simulated R2 bucket
-      await assets.put(r2Key, MOCK_PNG, {
-        httpMetadata: { contentType: 'image/png' },
-      });
+      // 3. Fetch the real source photo if we have one; fall back to the
+      // branded placeholder if there isn't one or it can't be fetched.
+      const fetched = item.imageUrl ? await fetchExternalImage(item.imageUrl) : null;
+      const ext = fetched?.ext ?? 'png';
+      const contentType = fetched?.contentType ?? 'image/png';
+      const bytes = fetched?.bytes ?? decodePlaceholder();
 
-      // 5. Insert image record in D1
+      const r2Key = `properties/${inserted.id}/${crypto.randomUUID()}.${ext}`;
+      await assets.put(r2Key, bytes, { httpMetadata: { contentType } });
+
+      // 4. Insert image record in D1
       await db
         .prepare(
           'INSERT INTO property_images (property_id, r2_key, content_type, position) VALUES (?, ?, ?, 0)'
         )
-        .bind(inserted.id, r2Key, 'image/png')
+        .bind(inserted.id, r2Key, contentType)
         .run();
 
       count++;
+    } catch (err) {
+      logger.error('Failed to import scraped property', { error: err, title: item.title });
     }
   }
 

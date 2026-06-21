@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { api, assetUrl, type Property } from '../api';
 import { ApiError } from '../api';
 import { useLang } from '../i18n';
+import TerritoryPicker from '../components/TerritoryPicker';
 
 const TYPES = ['house', 'apartment', 'condo', 'villa', 'land', 'commercial'] as const;
 const FEATURES = ['ac', 'pool', 'balcony', 'garden', 'oceanview', 'furnished', 'gated', 'washer', 'dishwasher', 'heating', 'fireplace'] as const;
@@ -247,18 +248,16 @@ export default function NewListing() {
                 <input id="title" required minLength={5} maxLength={120} value={form.title} onChange={(e) => set('title', e.target.value)} />
                 {fields.title && <p className="err">{fields.title}</p>}
               </div>
-              <div className="form-row">
-                <div className="field">
-                  <label htmlFor="address">{t('new.address')}</label>
-                  <input id="address" required minLength={3} maxLength={200} value={form.address} onChange={(e) => set('address', e.target.value)} />
-                  {fields.address && <p className="err">{fields.address}</p>}
-                </div>
-                <div className="field">
-                  <label htmlFor="city">{t('new.city')}</label>
-                  <input id="city" required minLength={2} maxLength={80} value={form.city} onChange={(e) => set('city', e.target.value)} />
-                  {fields.city && <p className="err">{fields.city}</p>}
-                </div>
+              <div className="field">
+                <label htmlFor="address">{t('new.address')}</label>
+                <input id="address" required minLength={3} maxLength={200} value={form.address} onChange={(e) => set('address', e.target.value)} />
+                {fields.address && <p className="err">{fields.address}</p>}
               </div>
+              <TerritoryPicker
+                defaultMunicipality={form.city}
+                onSelect={({ municipality }) => set('city', municipality)}
+              />
+              {fields.city && <p className="err">{fields.city}</p>}
             </>
           )}
 

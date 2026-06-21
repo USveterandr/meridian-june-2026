@@ -40,16 +40,29 @@ export interface SupercasasCard {
   title2: string; // neighborhood/location, e.g. "Piantini"
   title3: string; // price, e.g. "US$ 1,000,000" or "US$ 3,000/Mes"
   features: string[]; // e.g. ["4 Habitaciones", "4.5 Baños", "546 Mt2 Construcción"]
+  imageUrl: string | null;
+}
+
+// Photo URLs come back as small thumbnails (e.g. .../AdsPhotos/155x110/5/ID.jpg);
+// the CDN serves the same photo at any WxH in that path segment, so swap in a
+// larger size rather than storing a 155x110 thumbnail as the listing's cover photo.
+const THUMB_SIZE_RE = /\/AdsPhotos\/\d+x\d+\//;
+function upsizePhoto(url: string): string {
+  return url.replace(THUMB_SIZE_RE, '/AdsPhotos/800x600/');
 }
 
 export function parseSupercasasCards(html: string): SupercasasCard[] {
-  return extractBlocks(html, 'li', 'normal').map((block) => ({
-    href: extractAttr(block, 'a', 'href'),
-    title1: extractText(block, 'div', 'title1'),
-    title2: extractText(block, 'div', 'title2'),
-    title3: extractText(block, 'div', 'title3'),
-    features: extractAllText(block, 'span'),
-  }));
+  return extractBlocks(html, 'li', 'normal').map((block) => {
+    const rawImage = extractAttr(block, 'img', 'src');
+    return {
+      href: extractAttr(block, 'a', 'href'),
+      title1: extractText(block, 'div', 'title1'),
+      title2: extractText(block, 'div', 'title2'),
+      title3: extractText(block, 'div', 'title3'),
+      features: extractAllText(block, 'span'),
+      imageUrl: rawImage ? upsizePhoto(rawImage) : null,
+    };
+  });
 }
 
 function mapPropertyType(title1: string): ScrapedProperty['propertyType'] | null {
@@ -125,6 +138,7 @@ export function normalizeSupercasasCard(card: SupercasasCard): ScrapedProperty |
     areaM2,
     lotM2,
     features: extra,
+    imageUrl: card.imageUrl ?? undefined,
   };
 }
 

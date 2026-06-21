@@ -6,13 +6,16 @@ import { useLang } from '../i18n';
 import { useSEO } from '../seo';
 
 export default function Profile() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshSubscription } = useAuth();
   const { t, lang, setLang } = useLang();
   const [form, setForm] = useState<Partial<User>>({});
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [cedula, setCedula] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
 
   useSEO({
     title: { en: 'Profile & Settings', es: 'Perfil y Configuración' },
@@ -64,6 +67,26 @@ export default function Profile() {
     }
   }
 
+  async function verifyCedula(e: FormEvent) {
+    e.preventDefault();
+    if (verifying) return;
+    setVerifying(true);
+    setVerifyError('');
+    try {
+      const d = await api.post<{ valid: boolean }>('/api/verify/cedula', { cedula });
+      if (d.valid) {
+        await refreshSubscription();
+        setCedula('');
+      } else {
+        setVerifyError(t('profile.cedulaInvalid'));
+      }
+    } catch {
+      setVerifyError(t('common.error'));
+    } finally {
+      setVerifying(false);
+    }
+  }
+
   return (
     <main className="section">
       <div className="container" style={{ maxWidth: 760 }}>
@@ -110,6 +133,30 @@ export default function Profile() {
             </div>
             <button className="btn gold" disabled={saving}>{saving ? t('common.loading') : t('profile.save')}</button>
           </form>
+        </div>
+
+        <div className="aside-card">
+          <h2>{t('profile.cedulaTitle')}</h2>
+          {user.cedulaVerified ? (
+            <div className="alert ok">{t('profile.cedulaVerified')}</div>
+          ) : (
+            <>
+              <p className="meta">{t('profile.cedulaHint')}</p>
+              <form onSubmit={verifyCedula} noValidate>
+                <div className="field">
+                  <label htmlFor="cedula">{t('profile.cedulaLabel')}</label>
+                  <input
+                    id="cedula" required pattern="\d{11}" maxLength={11} placeholder="00112345678"
+                    value={cedula} onChange={(e) => setCedula(e.target.value.replace(/\D/g, ''))}
+                  />
+                </div>
+                {verifyError && <div className="alert error" role="alert">{verifyError}</div>}
+                <button className="btn outline" disabled={verifying || cedula.length !== 11}>
+                  {verifying ? t('common.loading') : t('profile.cedulaVerify')}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </main>
