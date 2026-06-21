@@ -13,6 +13,20 @@ const seedPlansSql = fs.readFileSync(new URL('../../seed-plans.sql', import.meta
 const JWT_SECRET = 'test-secret-at-least-32-characters-long!!';
 const ALLOWED_ORIGINS = 'http://localhost:5173';
 
+// Registration validates cédula format against the DR Gov API; stub that
+// network call out so tests are deterministic and don't depend on network
+// access. Cédulas ending in '0000' are treated as deliberately invalid so
+// the "rejects bad cédula" test can exercise the real failure path.
+const realFetch = globalThis.fetch;
+globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  if (url.includes('api.digital.gob.do/v3/cedulas/')) {
+    const valid = !url.endsWith('0000/validate');
+    return new Response(JSON.stringify({ valid }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  }
+  return realFetch(input, init);
+}) as typeof fetch;
+
 let ipCounter = 1;
 
 // Helper to generate headers with unique IPs to bypass isolate-level rate limits
@@ -62,6 +76,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -77,6 +92,26 @@ describe('Meridian API Integration Tests', () => {
       assert.strictEqual(data.user.role, 'buyer');
     });
 
+    it('should reject registration with an invalid cédula', async () => {
+      const res = await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          firstName: 'Jane',
+          lastName: 'Doe',
+          cedula: '00000000000',
+          email: 'jane-bad-cedula@example.com',
+          password: 'Password123!',
+          role: 'buyer',
+          locale: 'en',
+        }),
+      }, env);
+
+      assert.strictEqual(res.status, 400);
+      const data = await res.json();
+      assert.ok(data.fields.cedula);
+    });
+
     it('should fail registration for duplicate email', async () => {
       // First register
       await app.request('/api/auth/register', {
@@ -85,6 +120,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -99,6 +135,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Jane',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -119,6 +156,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -151,6 +189,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -181,6 +220,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -208,6 +248,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'John',
           lastName: 'Doe',
+          cedula: '40224773953',
           email: 'john@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -248,6 +289,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Seller',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'seller@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -266,6 +308,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Buyer',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'buyer@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -421,6 +464,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Other',
           lastName: 'Seller',
+          cedula: '40224773953',
           email: 'other@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -449,6 +493,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Free',
           lastName: 'Owner',
+          cedula: '40224773953',
           email: 'freeowner@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -491,6 +536,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Team',
           lastName: 'Lead',
+          cedula: '40224773953',
           email: 'teamlead@example.com',
           password: 'Password123!',
           role: 'agent',
@@ -519,7 +565,7 @@ describe('Meridian API Integration Tests', () => {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({
-          firstName: 'Shady', lastName: 'Buyer', email: 'shady@example.com',
+          firstName: 'Shady', lastName: 'Buyer', cedula: '40224773953', email: 'shady@example.com',
           password: 'Password123!', role: 'buyer', locale: 'en', planId: 'free',
         }),
       }, env);
@@ -551,7 +597,7 @@ describe('Meridian API Integration Tests', () => {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({
-          firstName: 'Trial', lastName: 'User', email: 'trialuser@example.com',
+          firstName: 'Trial', lastName: 'User', cedula: '40224773953', email: 'trialuser@example.com',
           password: 'Password123!', role: 'buyer', locale: 'en', planId: 'pro',
         }),
       }, env);
@@ -566,7 +612,7 @@ describe('Meridian API Integration Tests', () => {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({
-          firstName: 'Admin', lastName: 'User', email: 'admin-sweep@example.com',
+          firstName: 'Admin', lastName: 'User', cedula: '40224773953', email: 'admin-sweep@example.com',
           password: 'Password123!', role: 'buyer', locale: 'en',
         }),
       }, env);
@@ -616,6 +662,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Seller',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'seller@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -731,6 +778,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Buyer',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'buyer@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -747,6 +795,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Seller',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'seller@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -816,6 +865,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Buyer',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'buyer@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -834,6 +884,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Seller',
           lastName: 'One',
+          cedula: '40224773953',
           email: 'seller@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -931,6 +982,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'User1',
           lastName: 'A',
+          cedula: '40224773953',
           email: 'user1@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -948,6 +1000,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'User2',
           lastName: 'B',
+          cedula: '40224773953',
           email: 'user2@example.com',
           password: 'Password123!',
           role: 'seller',
@@ -1004,6 +1057,7 @@ describe('Meridian API Integration Tests', () => {
       const registerPayload = {
         firstName: 'Rate',
         lastName: 'Limit',
+        cedula: '40224773953',
         password: 'Password123!',
         role: 'buyer',
         locale: 'en',
@@ -1055,6 +1109,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Admin',
           lastName: 'User',
+          cedula: '40224773953',
           email: 'admin@example.com',
           password: 'Password123!',
           role: 'buyer',
@@ -1083,6 +1138,7 @@ describe('Meridian API Integration Tests', () => {
         body: JSON.stringify({
           firstName: 'Buyer',
           lastName: 'User',
+          cedula: '40224773953',
           email: 'buyer-scraper@example.com',
           password: 'Password123!',
           role: 'buyer',

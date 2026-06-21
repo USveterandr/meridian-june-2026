@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../middleware/auth';
+import { rateLimit } from '../middleware/rateLimit';
+import { validateCedulaFormat } from '../lib/cedula';
 import type { AppEnv } from '../types';
 
 const verify = new Hono<AppEnv>();
@@ -7,24 +9,25 @@ const verify = new Hono<AppEnv>();
 // ─── Cédula Validation ───────────────────────────────────────────────────
 // Proxies the DR Government's JCE/Luhn validation API.
 // No personal data is stored — just the boolean result.
-verify.get('/cedula/:id', requireAuth, async (c) => {
+
+// Public, unauthenticated, rate-limited — used for live feedback while
+// typing a cédula during signup, before an account (and auth token) exists.
+verify.get('/cedula-check/:id', rateLimit('cedula-check', 30, 300), async (c) => {
   const id = c.req.param('id');
-  // Cédulas are exactly 11 digits
   if (!/^\d{11}$/.test(id)) {
     return c.json({ valid: false, error: 'Cédula must be exactly 11 digits.' }, 400);
   }
+  const valid = await validateCedulaFormat(id);
+  return c.json({ valid });
+});
 
-  try {
-    const res = await fetch(
-      `https://api.digital.gob.do/v3/cedulas/${id}/validate`,
-      { headers: { 'Accept': 'application/json' } }
-    );
-    if (!res.ok) return c.json({ valid: false, error: 'Validation service unavailable.' }, 502);
-    const data = await res.json() as { valid: boolean };
-    return c.json(data);
-  } catch {
-    return c.json({ valid: false, error: 'Could not reach the validation service.' }, 502);
+verify.get('/cedula/:id', requireAuth, async (c) => {
+  const id = c.req.param('id');
+  if (!/^\d{11}$/.test(id)) {
+    return c.json({ valid: false, error: 'Cédula must be exactly 11 digits.' }, 400);
   }
+  const valid = await validateCedulaFormat(id);
+  return c.json({ valid });
 });
 
 // Validate and persist on the authenticated user's profile
@@ -37,19 +40,7 @@ verify.post('/cedula', requireAuth, async (c) => {
     return c.json({ valid: false, error: 'Cédula must be exactly 11 digits.' }, 400);
   }
 
-  let valid = false;
-  try {
-    const res = await fetch(
-      `https://api.digital.gob.do/v3/cedulas/${id}/validate`,
-      { headers: { 'Accept': 'application/json' } }
-    );
-    if (res.ok) {
-      const data = await res.json() as { valid: boolean };
-      valid = data.valid;
-    }
-  } catch {
-    return c.json({ valid: false, error: 'Could not reach the validation service.' }, 502);
-  }
+  const valid = await validateCedulaFormat(id);
 
   if (valid) {
     await c.env.DB

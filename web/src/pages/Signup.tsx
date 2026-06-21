@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { useLang } from '../i18n';
-import { ApiError } from '../api';
+import { api, ApiError } from '../api';
 import PlanPicker from '../components/PlanPicker';
 
 const ROLES = ['buyer', 'renter', 'investor', 'seller', 'agent', 'landlord', 'broker', 'lawyer', 'notary'] as const;
@@ -44,7 +44,7 @@ export default function Signup() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', password: '', confirm: '', role: 'buyer', terms: false,
+    firstName: '', lastName: '', cedula: '', email: '', password: '', confirm: '', role: 'buyer', terms: false, cedulaConfirm: false,
   });
   // Conditional fields
   const [sellerType, setSellerType] = useState('house');
@@ -56,6 +56,8 @@ export default function Signup() {
   const [busy, setBusy] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [planId, setPlanId] = useState<string | null>(null);
+  const [cedulaStatus, setCedulaStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const cedulaCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (user) return <Navigate to="/dashboard" replace />;
 
@@ -63,8 +65,29 @@ export default function Signup() {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
+  function onCedulaChange(raw: string) {
+    const digits = raw.replace(/\D/g, '').slice(0, 11);
+    set('cedula', digits);
+    set('cedulaConfirm', false);
+    setCedulaStatus('idle');
+    if (cedulaCheckTimer.current) clearTimeout(cedulaCheckTimer.current);
+    if (digits.length !== 11) return;
+    cedulaCheckTimer.current = setTimeout(() => {
+      setCedulaStatus('checking');
+      api.get<{ valid: boolean }>(`/api/verify/cedula-check/${digits}`)
+        .then((d) => setCedulaStatus(d.valid ? 'valid' : 'invalid'))
+        .catch(() => setCedulaStatus('invalid'));
+    }, 400);
+  }
+
+  useEffect(() => () => { if (cedulaCheckTimer.current) clearTimeout(cedulaCheckTimer.current); }, []);
+
   function validateStep1(): boolean {
     const fe: Record<string, string> = {};
+    if (form.cedula.length !== 11) fe.cedula = lang === 'es' ? 'La cédula debe tener 11 dígitos.' : 'Cédula must be 11 digits.';
+    else if (cedulaStatus === 'invalid') fe.cedula = lang === 'es' ? 'Esta cédula no parece válida.' : 'This cédula does not look valid.';
+    else if (cedulaStatus !== 'valid') fe.cedula = lang === 'es' ? 'Espera a que se verifique la cédula.' : 'Please wait for the cédula check to finish.';
+    else if (!form.cedulaConfirm) fe.cedulaConfirm = lang === 'es' ? 'Debes confirmar tu nombre y cédula.' : 'You must confirm your name and cédula.';
     if (form.password !== form.confirm) fe.confirm = lang === 'es' ? 'Las contraseñas no coinciden.' : 'Passwords do not match.';
     if (!form.terms) fe.terms = lang === 'es' ? 'Debes aceptar los términos.' : 'You must accept the terms.';
     setFields(fe);
@@ -95,7 +118,7 @@ export default function Signup() {
     setBusy(true);
     try {
       await register({
-        firstName: form.firstName.trim(), lastName: form.lastName.trim(),
+        firstName: form.firstName.trim(), lastName: form.lastName.trim(), cedula: form.cedula,
         email: form.email.trim(), password: form.password, role: form.role, locale: lang,
         planId,
         ...buildRoleMeta(),
@@ -165,6 +188,33 @@ export default function Signup() {
               {fields.lastName && <p className="err">{fields.lastName}</p>}
             </div>
           </div>
+          <div className="field">
+            <label htmlFor="cedula">{t('signup.cedula')}</label>
+            <input
+              id="cedula" inputMode="numeric" autoComplete="off" required maxLength={11}
+              value={form.cedula} onChange={(e) => onCedulaChange(e.target.value)}
+              aria-invalid={Boolean(fields.cedula)}
+            />
+            <p className="meta">{t('signup.cedula.hint')}</p>
+            {cedulaStatus === 'checking' && <p className="meta">{t('signup.cedula.checking')}</p>}
+            {cedulaStatus === 'valid' && <p className="meta" style={{ color: 'var(--gold, #c9a86a)' }}>{t('signup.cedula.valid')}</p>}
+            {cedulaStatus === 'invalid' && <p className="err">{t('signup.cedula.invalid')}</p>}
+            {fields.cedula && <p className="err">{fields.cedula}</p>}
+          </div>
+          {cedulaStatus === 'valid' && (form.firstName.trim() || form.lastName.trim()) && (
+            <div className="field" style={{ background: 'var(--surface-2,rgba(255,255,255,0.04))', borderRadius: 8, padding: '12px 16px', border: '1px solid var(--border)' }}>
+              <p style={{ fontWeight: 600, marginTop: 0 }}>{t('signup.cedula.confirmTitle')}</p>
+              <p className="meta">{t('signup.cedula.confirmBody')}</p>
+              <p style={{ fontSize: '1.05rem', fontWeight: 600 }}>
+                {form.firstName.trim()} {form.lastName.trim()} — {form.cedula.replace(/(\d{3})(\d{7})(\d{1})/, '$1-$2-$3')}
+              </p>
+              <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
+                <input type="checkbox" checked={form.cedulaConfirm} onChange={(e) => set('cedulaConfirm', e.target.checked)} style={{ marginTop: 3 }} />
+                <span>{t('signup.cedula.confirmCheckbox')}</span>
+              </label>
+              {fields.cedulaConfirm && <p className="err">{fields.cedulaConfirm}</p>}
+            </div>
+          )}
           <div className="field">
             <label htmlFor="email">{t('login.email')}</label>
             <input id="email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />

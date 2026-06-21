@@ -8,6 +8,7 @@ export const STATUSES = ['draft', 'active', 'pending', 'sold', 'rented', 'inacti
 export const registerSchema = z.object({
   firstName: z.string().trim().min(1).max(60),
   lastName: z.string().trim().min(1).max(60),
+  cedula: z.string().trim().regex(/^\d{11}$/, 'Cédula must be exactly 11 digits.'),
   email: z.string().trim().toLowerCase().email().max(254),
   password: z
     .string()

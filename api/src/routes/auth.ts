@@ -4,6 +4,7 @@ import { createToken } from '../lib/jwt';
 import { registerSchema, loginSchema, profileSchema, flattenZodError } from '../lib/validate';
 import { requireAuth } from '../middleware/auth';
 import { rateLimit } from '../middleware/rateLimit';
+import { validateCedulaFormat } from '../lib/cedula';
 import type { AppEnv } from '../types';
 
 const auth = new Hono<AppEnv>();
@@ -47,7 +48,15 @@ function publicUser(u: UserRow, cedulaVerified = false) {
 auth.post('/register', rateLimit('register', 10, 600), async (c) => {
   const parsed = registerSchema.safeParse(await c.req.json().catch(() => ({})));
   if (!parsed.success) return c.json({ error: 'Please correct the highlighted fields.', fields: flattenZodError(parsed.error) }, 400);
-  const { firstName, lastName, email, password, role, locale, planId } = parsed.data;
+  const { firstName, lastName, cedula, email, password, role, locale, planId } = parsed.data;
+
+  // Cédula is mandatory at signup; we can only check its checksum format
+  // against the gov API (no registry name lookup is available), so users
+  // self-confirm the name/cédula match on the frontend before submitting.
+  const cedulaValid = await validateCedulaFormat(cedula);
+  if (!cedulaValid) {
+    return c.json({ error: 'Please correct the highlighted fields.', fields: { cedula: 'This cédula does not look valid. Double-check the digits.' } }, 400);
+  }
 
   // Plan selection is a required signup step — validate it before creating the account.
   const plan = planId
@@ -88,8 +97,14 @@ auth.post('/register', rateLimit('register', 10, 600), async (c) => {
       }
     }
 
+    await c.env.DB
+      .prepare(`INSERT INTO user_verification (user_id, cedula_verified, cedula_last4, verified_at)
+                VALUES (?, 1, ?, datetime('now'))`)
+      .bind(result.id, cedula.slice(-4))
+      .run();
+
     const token = await createToken({ id: result.id, email: result.email, role: result.role }, c.env.JWT_SECRET);
-    return c.json({ token, user: publicUser(result) }, 201);
+    return c.json({ token, user: publicUser(result, true) }, 201);
   } catch (e) {
     const msg = e instanceof Error ? e.message : '';
     if (msg.includes('UNIQUE')) {
