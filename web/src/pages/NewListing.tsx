@@ -113,14 +113,29 @@ export default function NewListing() {
       setCreated(d.property);
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
         if (err.fields) {
           setFields(err.fields);
-          // Jump back to the step containing the first invalid field.
           const f = Object.keys(err.fields)[0] ?? '';
+          setError(`${err.message} — ${f}: ${err.fields[f]}`);
+          // Jump back to the step containing the first invalid field.
           if (['title', 'price', 'priceCents', 'address', 'city', 'listingType', 'propertyType'].includes(f)) setStep(1);
           else if (['description', 'areaM2', 'lotM2', 'bedrooms', 'bathrooms', 'yearBuilt'].includes(f)) setStep(2);
           else setStep(3);
+          // Scroll the offending field into view once the step has rendered.
+          const elId: Record<string, string> = {
+            title: 'title', price: 'price', priceCents: 'price', address: 'address',
+            listingType: 'lt', propertyType: 'pt', description: 'desc', areaM2: 'area',
+            lotM2: 'lot', bedrooms: 'beds', bathrooms: 'baths', yearBuilt: 'year', virtualTourUrl: 'tour',
+          };
+          const targetId = elId[f];
+          if (targetId) {
+            setTimeout(() => {
+              document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              document.getElementById(targetId)?.focus();
+            }, 0);
+          }
+        } else {
+          setError(err.message);
         }
       } else {
         setError(t('common.error'));
@@ -292,7 +307,14 @@ export default function NewListing() {
               </div>
               <div className="field">
                 <label htmlFor="desc">{t('new.description')}</label>
-                <textarea id="desc" rows={6} maxLength={5000} value={form.description} onChange={(e) => set('description', e.target.value)} />
+                <textarea
+                  id="desc" rows={6} maxLength={5000} value={form.description}
+                  onChange={(e) => set('description', e.target.value.slice(0, 5000))}
+                  aria-invalid={Boolean(fields.description)}
+                />
+                <p className="meta" style={form.description.length >= 5000 ? { color: '#e08980' } : undefined}>
+                  {form.description.length} / 5000
+                </p>
                 {fields.description && <p className="err">{fields.description}</p>}
               </div>
             </>
