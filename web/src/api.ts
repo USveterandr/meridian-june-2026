@@ -85,6 +85,7 @@ export function assetUrl(path: string | null): string | null {
 export type User = {
   id: number; email: string; firstName: string; lastName: string; role: string;
   phone: string | null; locale: 'en' | 'es'; notifyMatches: boolean; notifyMessages: boolean;
+  cedulaVerified?: boolean;
 };
 
 export type Subscription = {

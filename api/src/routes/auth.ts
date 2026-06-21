@@ -28,7 +28,7 @@ type SubSummary = {
   price_monthly_cents: number; price_annual_cents: number; commission_pct: number;
 };
 
-function publicUser(u: UserRow) {
+function publicUser(u: UserRow, cedulaVerified = false) {
   return {
     id: u.id,
     email: u.email,
@@ -40,6 +40,7 @@ function publicUser(u: UserRow) {
     notifyMatches: u.notify_matches === 1,
     notifyMessages: u.notify_messages === 1,
     createdAt: u.created_at,
+    cedulaVerified,
   };
 }
 
@@ -115,7 +116,7 @@ auth.post('/login', rateLimit('login', 8, 300), async (c) => {
 
 auth.get('/me', requireAuth, async (c) => {
   const { id } = c.get('user');
-  const [user, sub] = await Promise.all([
+  const [user, sub, verification] = await Promise.all([
     c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first<UserRow>(),
     c.env.DB.prepare(
       `SELECT s.plan_id, s.status, s.billing_interval, s.current_period_end,
@@ -125,6 +126,8 @@ auth.get('/me', requireAuth, async (c) => {
        WHERE s.user_id = ? AND s.status IN ('active','trialing')
        ORDER BY s.created_at DESC LIMIT 1`
     ).bind(id).first<SubSummary>(),
+    c.env.DB.prepare('SELECT cedula_verified FROM user_verification WHERE user_id = ?')
+      .bind(id).first<{ cedula_verified: number }>(),
   ]);
   if (!user) return c.json({ error: 'Account not found.' }, 404);
 
@@ -140,7 +143,7 @@ auth.get('/me', requireAuth, async (c) => {
       }
     : null;
 
-  return c.json({ user: publicUser(user), subscription });
+  return c.json({ user: publicUser(user, verification?.cedula_verified === 1), subscription });
 });
 
 auth.patch('/me', requireAuth, async (c) => {

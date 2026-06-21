@@ -9,6 +9,7 @@ import { requireAuth, requireRole } from '../middleware/auth';
 import { rateLimit } from '../middleware/rateLimit';
 import { LISTING_ROLES, type AppEnv } from '../types';
 import { MAX_IMAGE_BYTES, sniffImageType } from '../lib/imageValidation';
+import { geocodeAddress } from '../lib/geocode';
 
 const properties = new Hono<AppEnv>();
 
@@ -177,6 +178,16 @@ properties.post('/', requireAuth, requireRole(...LISTING_ROLES), rateLimit('crea
     }
   }
 
+  // Geocode the address when the client didn't supply coordinates, so every
+  // listing can be placed on the map without the user needing to know its
+  // lat/lng. Best-effort: a failed lookup just leaves latitude/longitude null.
+  let latitude = p.latitude ?? null;
+  let longitude = p.longitude ?? null;
+  if (latitude === null && longitude === null && c.env.GOOGLE_MAPS_SERVER_KEY) {
+    const geocoded = await geocodeAddress(c.env.GOOGLE_MAPS_SERVER_KEY, p.address, p.city, p.country);
+    if (geocoded) { latitude = geocoded.latitude; longitude = geocoded.longitude; }
+  }
+
   const row = await c.env.DB.prepare(
     `INSERT INTO properties
        (owner_id, title, description, property_type, listing_type, price_cents, currency,
@@ -185,7 +196,7 @@ properties.post('/', requireAuth, requireRole(...LISTING_ROLES), rateLimit('crea
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *`
   ).bind(
     user.id, p.title, p.description, p.propertyType, p.listingType, p.priceCents, p.currency,
-    p.address, p.city, p.country, p.latitude ?? null, p.longitude ?? null, p.bedrooms, p.bathrooms,
+    p.address, p.city, p.country, latitude, longitude, p.bedrooms, p.bathrooms,
     p.areaM2 ?? null, p.lotM2 ?? null, p.yearBuilt ?? null, JSON.stringify(p.features),
     p.virtualTourUrl ?? null, p.status
   ).first<PropertyRow>();
