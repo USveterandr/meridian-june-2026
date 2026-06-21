@@ -3,8 +3,8 @@ import type { AppEnv } from '../types';
 
 const assets = new Hono<AppEnv>();
 
-// Keys are server-generated UUIDs under properties/<id>/ — anything else 404s.
-const KEY_PATTERN = /^properties\/\d{1,12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/;
+// Keys are server-generated UUIDs under properties/<id>/ or avatars/<userId>/ — anything else 404s.
+const KEY_PATTERN = /^(properties|avatars)\/\d{1,12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/;
 
 assets.get('/*', async (c) => {
   const key = c.req.path.replace(/^\/api\/assets\//, '');

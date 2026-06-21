@@ -5,7 +5,14 @@ import { registerSchema, loginSchema, profileSchema, flattenZodError } from '../
 import { requireAuth } from '../middleware/auth';
 import { rateLimit } from '../middleware/rateLimit';
 import { validateCedulaFormat } from '../lib/cedula';
+import { MAX_IMAGE_BYTES, sniffImageType } from '../lib/imageValidation';
 import type { AppEnv } from '../types';
+
+const AVATAR_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
 
 const auth = new Hono<AppEnv>();
 
@@ -29,7 +36,7 @@ type SubSummary = {
   price_monthly_cents: number; price_annual_cents: number; commission_pct: number;
 };
 
-function publicUser(u: UserRow, cedulaVerified = false) {
+function publicUser(u: UserRow, cedulaVerified = false, avatarUrl: string | null = null) {
   return {
     id: u.id,
     email: u.email,
@@ -42,6 +49,7 @@ function publicUser(u: UserRow, cedulaVerified = false) {
     notifyMessages: u.notify_messages === 1,
     createdAt: u.created_at,
     cedulaVerified,
+    avatarUrl,
   };
 }
 
@@ -131,7 +139,7 @@ auth.post('/login', rateLimit('login', 8, 300), async (c) => {
 
 auth.get('/me', requireAuth, async (c) => {
   const { id } = c.get('user');
-  const [user, sub, verification] = await Promise.all([
+  const [user, sub, verification, avatar] = await Promise.all([
     c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first<UserRow>(),
     c.env.DB.prepare(
       `SELECT s.plan_id, s.status, s.billing_interval, s.current_period_end,
@@ -143,6 +151,8 @@ auth.get('/me', requireAuth, async (c) => {
     ).bind(id).first<SubSummary>(),
     c.env.DB.prepare('SELECT cedula_verified FROM user_verification WHERE user_id = ?')
       .bind(id).first<{ cedula_verified: number }>(),
+    c.env.DB.prepare('SELECT r2_key FROM user_avatars WHERE user_id = ?')
+      .bind(id).first<{ r2_key: string }>(),
   ]);
   if (!user) return c.json({ error: 'Account not found.' }, 404);
 
@@ -158,7 +168,59 @@ auth.get('/me', requireAuth, async (c) => {
       }
     : null;
 
-  return c.json({ user: publicUser(user, verification?.cedula_verified === 1), subscription });
+  const avatarUrl = avatar ? `/api/assets/${avatar.r2_key}` : null;
+  return c.json({ user: publicUser(user, verification?.cedula_verified === 1, avatarUrl), subscription });
+});
+
+// ─── Avatar upload ───────────────────────────────────────────────────────
+auth.post('/me/avatar', requireAuth, rateLimit('avatar-upload', 20, 3600), async (c) => {
+  const { id } = c.get('user');
+
+  const contentLength = Number(c.req.header('Content-Length') ?? '0');
+  if (contentLength > MAX_IMAGE_BYTES + 4096) {
+    return c.json({ error: 'Photos must be 8 MB or smaller.' }, 413);
+  }
+
+  const form = await c.req.formData().catch(() => null);
+  const file = (form?.get('file') ?? null) as unknown;
+  if (!(file instanceof File)) return c.json({ error: 'Attach a photo in the "file" field.' }, 400);
+  if (!AVATAR_TYPES[file.type]) return c.json({ error: 'Photos must be JPEG, PNG, or WebP.' }, 415);
+  if (file.size === 0 || file.size > MAX_IMAGE_BYTES) {
+    return c.json({ error: 'Photos must be 8 MB or smaller.' }, 413);
+  }
+
+  // Trust sniffed magic bytes, not the (attacker-controlled) declared Content-Type.
+  const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const sniffed = sniffImageType(head);
+  if (!sniffed) return c.json({ error: 'This file does not look like a valid photo.' }, 415);
+
+  const previous = await c.env.DB.prepare('SELECT r2_key FROM user_avatars WHERE user_id = ?')
+    .bind(id).first<{ r2_key: string }>();
+
+  // Random, server-generated key: user-supplied filenames never touch R2.
+  const key = `avatars/${id}/${crypto.randomUUID()}.${sniffed.ext}`;
+  await c.env.ASSETS.put(key, file.stream(), { httpMetadata: { contentType: sniffed.contentType } });
+
+  await c.env.DB.prepare(
+    `INSERT INTO user_avatars (user_id, r2_key, content_type, updated_at)
+     VALUES (?, ?, ?, datetime('now'))
+     ON CONFLICT(user_id) DO UPDATE SET r2_key = excluded.r2_key, content_type = excluded.content_type, updated_at = excluded.updated_at`
+  ).bind(id, key, sniffed.contentType).run();
+
+  if (previous) await c.env.ASSETS.delete(previous.r2_key);
+
+  return c.json({ avatarUrl: `/api/assets/${key}` }, 201);
+});
+
+auth.delete('/me/avatar', requireAuth, async (c) => {
+  const { id } = c.get('user');
+  const existing = await c.env.DB.prepare('SELECT r2_key FROM user_avatars WHERE user_id = ?')
+    .bind(id).first<{ r2_key: string }>();
+  if (!existing) return c.json({ error: 'No avatar to remove.' }, 404);
+
+  await c.env.DB.prepare('DELETE FROM user_avatars WHERE user_id = ?').bind(id).run();
+  await c.env.ASSETS.delete(existing.r2_key);
+  return c.json({ ok: true });
 });
 
 auth.patch('/me', requireAuth, async (c) => {

@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { api, type User } from '../api';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import { api, assetUrl, type User } from '../api';
 import { ApiError } from '../api';
 import { useAuth } from '../auth';
 import { useLang } from '../i18n';
@@ -16,6 +16,9 @@ export default function Profile() {
   const [cedula, setCedula] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useSEO({
     title: { en: 'Profile & Settings', es: 'Perfil y Configuración' },
@@ -67,6 +70,35 @@ export default function Profile() {
     }
   }
 
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setAvatarUploading(true);
+    setAvatarError('');
+    try {
+      await api.upload<{ avatarUrl: string }>('/api/auth/me/avatar', file);
+      await refreshSubscription();
+    } catch {
+      setAvatarError(t('profile.avatarError'));
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
+  async function removeAvatar() {
+    setAvatarUploading(true);
+    setAvatarError('');
+    try {
+      await api.delete('/api/auth/me/avatar');
+      await refreshSubscription();
+    } catch {
+      setAvatarError(t('profile.avatarError'));
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
   async function verifyCedula(e: FormEvent) {
     e.preventDefault();
     if (verifying) return;
@@ -91,6 +123,44 @@ export default function Profile() {
     <main className="section">
       <div className="container" style={{ maxWidth: 760 }}>
         <h1>{t('profile.title')}</h1>
+
+        <div className="aside-card">
+          <h2>{t('profile.avatarTitle')}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 8 }}>
+            <div style={{
+              width: 84, height: 84, borderRadius: '50%', overflow: 'hidden',
+              background: 'var(--line)', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.8rem', color: 'var(--text-dim)',
+            }}>
+              {user.avatarUrl
+                ? <img src={assetUrl(user.avatarUrl) ?? ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <span>{(user.firstName?.[0] ?? '').toUpperCase()}</span>}
+            </div>
+            <div>
+              <p className="meta" style={{ marginBottom: 10 }}>{t('profile.avatarHint')}</p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  type="button" className="btn outline" disabled={avatarUploading}
+                  onClick={() => avatarInputRef.current?.click()}
+                >
+                  {avatarUploading ? t('profile.avatarUploading') : user.avatarUrl ? t('profile.avatarChange') : t('profile.avatarUpload')}
+                </button>
+                {user.avatarUrl && (
+                  <button type="button" className="btn small danger" disabled={avatarUploading} onClick={removeAvatar}>
+                    {t('profile.avatarRemove')}
+                  </button>
+                )}
+                <input
+                  ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp"
+                  onChange={onAvatarChange} style={{ display: 'none' }}
+                />
+              </div>
+              {avatarError && <p className="err" style={{ marginTop: 8 }}>{avatarError}</p>}
+            </div>
+          </div>
+        </div>
+
         <div className="aside-card">
           <p className="eyebrow">{user.role}</p>
           <h2>{user.email}</h2>

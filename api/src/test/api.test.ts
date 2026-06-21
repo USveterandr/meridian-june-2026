@@ -766,6 +766,74 @@ describe('Meridian API Integration Tests', () => {
     });
   });
 
+  describe('Avatar Upload', () => {
+    let token: string;
+
+    beforeEach(async () => {
+      const res = await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          firstName: 'Ava', lastName: 'Tarr', cedula: '40224773953',
+          email: 'avatar-user@example.com', password: 'Password123!', role: 'buyer', locale: 'en',
+        }),
+      }, env);
+      token = (await res.json()).token;
+    });
+
+    it('should upload an avatar and reflect it on GET /me', async () => {
+      const formData = new FormData();
+      const fileBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+      formData.append('file', new File([fileBytes], 'me.png', { type: 'image/png' }));
+
+      const res = await app.request('/api/auth/me/avatar', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'CF-Connecting-IP': `127.0.0.${ipCounter++}` },
+        body: formData,
+      }, env);
+      assert.strictEqual(res.status, 201);
+      const data = await res.json();
+      assert.ok(data.avatarUrl.startsWith('/api/assets/avatars/'));
+
+      const meRes = await app.request('/api/auth/me', { method: 'GET', headers: getHeaders({ Authorization: `Bearer ${token}` }) }, env);
+      const meData = await meRes.json();
+      assert.strictEqual(meData.user.avatarUrl, data.avatarUrl);
+    });
+
+    it('should reject a non-image avatar upload', async () => {
+      const formData = new FormData();
+      formData.append('file', new File([new TextEncoder().encode('not an image')], 'fake.png', { type: 'image/png' }));
+
+      const res = await app.request('/api/auth/me/avatar', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'CF-Connecting-IP': `127.0.0.${ipCounter++}` },
+        body: formData,
+      }, env);
+      assert.strictEqual(res.status, 415);
+    });
+
+    it('should remove an avatar', async () => {
+      const formData = new FormData();
+      const fileBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+      formData.append('file', new File([fileBytes], 'me.png', { type: 'image/png' }));
+      await app.request('/api/auth/me/avatar', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'CF-Connecting-IP': `127.0.0.${ipCounter++}` },
+        body: formData,
+      }, env);
+
+      const delRes = await app.request('/api/auth/me/avatar', {
+        method: 'DELETE',
+        headers: getHeaders({ Authorization: `Bearer ${token}` }),
+      }, env);
+      assert.strictEqual(delRes.status, 200);
+
+      const meRes = await app.request('/api/auth/me', { method: 'GET', headers: getHeaders({ Authorization: `Bearer ${token}` }) }, env);
+      const meData = await meRes.json();
+      assert.strictEqual(meData.user.avatarUrl, null);
+    });
+  });
+
   describe('Favorites Routes', () => {
     let buyerToken: string;
     let propertyId: number;

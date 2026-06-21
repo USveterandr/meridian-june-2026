@@ -86,6 +86,7 @@ export type User = {
   id: number; email: string; firstName: string; lastName: string; role: string;
   phone: string | null; locale: 'en' | 'es'; notifyMatches: boolean; notifyMessages: boolean;
   cedulaVerified?: boolean;
+  avatarUrl?: string | null;
 };
 
 export type Subscription = {

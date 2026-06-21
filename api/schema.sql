@@ -106,6 +106,14 @@ CREATE TABLE IF NOT EXISTS user_verification (
   updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Profile avatar/photo, one per user, stored in R2 under avatars/<userId>/.
+CREATE TABLE IF NOT EXISTS user_avatars (
+  user_id      INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  r2_key       TEXT NOT NULL,
+  content_type TEXT NOT NULL,
+  updated_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Subscription plans catalogue
 CREATE TABLE IF NOT EXISTS plans (
   id                    TEXT PRIMARY KEY,
