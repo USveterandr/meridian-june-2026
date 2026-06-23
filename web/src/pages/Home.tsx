@@ -6,6 +6,7 @@ import { useAuth } from '../auth';
 import { canListProperties } from '../permissions';
 import { newListingPath, searchPath } from '../routes';
 import PropertyCard from '../components/PropertyCard';
+import InstallApp from '../components/InstallApp';
 import { useSEO } from '../seo';
 
 const CITY_IMAGES: Record<string, { emoji: string; color: string }> = {
@@ -288,6 +289,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ─── Install App ─── */}
+      <InstallApp />
 
       {/* ─── Newsletter Capture ─── */}
       <NewsletterCapture />
