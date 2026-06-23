@@ -1,7 +1,5 @@
 {
   "version": 1,
-  "routes": [
-    { "src": "/api/.*", "dest": "https://meridian-api.YOUR_SUBDOMAIN.workers.dev/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
+  "include": ["/*"],
+  "exclude": []
 }
