@@ -4,6 +4,7 @@ import { api, assetUrl, formatPrice, type Property } from '../api';
 import { useLang } from '../i18n';
 import { useAuth } from '../auth';
 import PropertyMap from '../components/PropertyMap';
+import ShareButtons from '../components/ShareButtons';
 import { useSEO } from '../seo';
 
 export default function PropertyDetail() {
@@ -154,6 +155,8 @@ export default function PropertyDetail() {
         <p className="price" style={{ fontSize: '1.6rem' }}>
           {formatPrice(p.priceCents, p.currency, p.listingType, t('listing.perMonth'))}
         </p>
+
+        <ShareButtons url={`https://investwithmeridian.com/property/${p.id}`} title={p.title} />
 
         {p.images.length > 0 && (
           <div className="gallery">
