@@ -156,3 +156,9 @@ CREATE TABLE IF NOT EXISTS territory_cache (
   cached_at   TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Newsletter subscribers
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  email          TEXT PRIMARY KEY,
+  lang           TEXT NOT NULL DEFAULT 'en' CHECK (lang IN ('en', 'es')),
+  subscribed_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);

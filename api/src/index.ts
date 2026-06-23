@@ -11,6 +11,7 @@ import verify from './routes/verify';
 import territories from './routes/territories';
 import plans from './routes/plans';
 import users from './routes/users';
+import newsletter from './routes/newsletter';
 import type { AppEnv, Bindings } from './types';
 import { logger } from './lib/logger';
 import { expireSubscriptions } from './lib/subscriptions';
@@ -100,6 +101,7 @@ app.route('/api/verify', verify);
 app.route('/api/territories', territories);
 app.route('/api/plans', plans);
 app.route('/api/users', users);
+app.route('/api/newsletter', newsletter);
 
 app.notFound((c) => c.json({ error: 'Not found.' }, 404));
 

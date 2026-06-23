@@ -834,6 +834,38 @@ describe('Meridian API Integration Tests', () => {
     });
   });
 
+  describe('Newsletter', () => {
+    it('should subscribe a valid email', async () => {
+      const res = await app.request('/api/newsletter', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ email: 'subscriber@example.com', lang: 'es' }),
+      }, env);
+      assert.strictEqual(res.status, 200);
+      const data = await res.json();
+      assert.strictEqual(data.ok, true);
+    });
+
+    it('should be idempotent for repeat subscriptions of the same email', async () => {
+      const body = JSON.stringify({ email: 'repeat@example.com', lang: 'en' });
+      const first = await app.request('/api/newsletter', { method: 'POST', headers: getHeaders(), body }, env);
+      assert.strictEqual(first.status, 200);
+      const second = await app.request('/api/newsletter', { method: 'POST', headers: getHeaders(), body }, env);
+      assert.strictEqual(second.status, 200);
+    });
+
+    it('should reject an invalid email', async () => {
+      const res = await app.request('/api/newsletter', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ email: 'not-an-email' }),
+      }, env);
+      assert.strictEqual(res.status, 400);
+      const data = await res.json();
+      assert.ok(data.fields.email);
+    });
+  });
+
   describe('Favorites Routes', () => {
     let buyerToken: string;
     let propertyId: number;

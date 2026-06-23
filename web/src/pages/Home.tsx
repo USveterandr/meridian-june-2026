@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api, type Property, type SearchResponse } from '../api';
+import { api, ApiError, type Property, type SearchResponse } from '../api';
 import { useLang } from '../i18n';
 import { useAuth } from '../auth';
 import { canListProperties } from '../permissions';
@@ -20,6 +20,81 @@ const CITY_IMAGES: Record<string, { emoji: string; color: string }> = {
 };
 
 const BENEFIT_ICONS = ['🏡', '📋', '💬', '🔔'];
+
+function NewsletterCapture() {
+  const { t, lang } = useLang();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [error, setError] = useState('');
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || status === 'loading') return;
+    setStatus('loading');
+    setError('');
+    try {
+      await api.post('/api/newsletter', { email: email.trim(), lang });
+      setStatus('success');
+    } catch (err) {
+      setStatus('error');
+      setError(err instanceof ApiError ? err.message : t('newsletter.error'));
+    }
+  }
+
+  return (
+    <section className="section" style={{ background: 'var(--surface)' }}>
+      <div className="container" style={{ maxWidth: 680, textAlign: 'center' }}>
+        <p className="eyebrow" style={{ marginBottom: 12 }}>{t('newsletter.eyebrow')}</p>
+        <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', marginBottom: 14 }}>
+          {t('newsletter.title')} <span className="gold">{t('newsletter.titleGold')}</span>
+        </h2>
+        <p style={{ color: 'var(--text-dim)', marginBottom: 28, lineHeight: 1.7 }}>
+          {t('newsletter.lede')}
+        </p>
+        {status === 'success' ? (
+          <div style={{ padding: '16px 24px', border: '1px solid var(--gold)', color: 'var(--gold)', fontSize: '0.95rem' }}>
+            {t('newsletter.success')}
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} style={{ display: 'flex', gap: 0, maxWidth: 480, margin: '0 auto' }}>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('newsletter.placeholder')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                border: '1px solid var(--border)',
+                borderRight: 'none',
+                background: 'var(--bg)',
+                color: 'var(--text)',
+                fontSize: '0.95rem',
+                outline: 'none',
+              }}
+              disabled={status === 'loading'}
+            />
+            <button
+              className="btn gold"
+              type="submit"
+              disabled={status === 'loading'}
+              style={{ borderRadius: 0, whiteSpace: 'nowrap' }}
+            >
+              {status === 'loading' ? t('newsletter.submitting') : t('newsletter.submit')}
+            </button>
+          </form>
+        )}
+        {status === 'error' && (
+          <p style={{ color: 'var(--danger, #c0392b)', marginTop: 10, fontSize: '0.85rem' }}>{error}</p>
+        )}
+        <p style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-dim)' }}>
+          {t('newsletter.unsubscribe')}
+        </p>
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   const { t } = useLang();
@@ -213,6 +288,60 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ─── Newsletter Capture ─── */}
+      <NewsletterCapture />
+
+      {/* ─── Blog Teaser ─── */}
+      <section className="section">
+        <div className="container">
+          <div className="section-head">
+            <h2>
+              DR Real Estate <span className="gold">Guides</span>
+            </h2>
+            <p>Everything you need to know before you buy.</p>
+          </div>
+          <div className="props3">
+            {[
+              {
+                icon: '📖',
+                title: 'How to Buy Property as a Foreigner',
+                desc: 'Step-by-step guide: title search, notary, closing costs, taxes, and timelines.',
+                slug: 'how-to-buy-property-dominican-republic-foreigner',
+              },
+              {
+                icon: '📊',
+                title: 'Rental Yields & ROI (2026)',
+                desc: '6–14% gross yields, sample ROI calculations, and government incentives explained.',
+                slug: 'dominican-republic-real-estate-investment-roi-2026',
+              },
+              {
+                icon: '📍',
+                title: 'Punta Cana vs Cap Cana vs Las Terrenas',
+                desc: 'Compare the top DR markets by price, yield, lifestyle, and who each suits best.',
+                slug: 'punta-cana-vs-cap-cana-vs-las-terrenas',
+              },
+            ].map((a) => (
+              <Link key={a.slug} to={`/blog/${a.slug}`} style={{ textDecoration: 'none' }}>
+                <div
+                  className="prop"
+                  style={{ cursor: 'pointer', transition: 'border-color 0.2s', border: '1px solid var(--border)' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--gold)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
+                >
+                  <span className="prop-icon" aria-hidden="true">{a.icon}</span>
+                  <h3>{a.title}</h3>
+                  <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', lineHeight: 1.6 }}>{a.desc}</p>
+                  <p style={{ marginTop: 12 }}><span className="linkish" style={{ fontSize: '0.88rem' }}>Read guide →</span></p>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 28 }}>
+            <Link className="linkish" to="/blog">View all guides →</Link>
+          </div>
+        </div>
+      </section>
 
       {/* ─── Stop Dreaming. Start Living. ─── */}
       <section className="cta-lux">

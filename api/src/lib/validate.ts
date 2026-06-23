@@ -21,6 +21,11 @@ export const registerSchema = z.object({
   planId: z.string().trim().min(1).max(40).optional(),
 });
 
+export const newsletterSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  lang: z.enum(['en', 'es']).default('en'),
+});
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   password: z.string().min(1).max(128),
