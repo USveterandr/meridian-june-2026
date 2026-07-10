@@ -27,13 +27,17 @@ function ThemeToggle() {
 }
 
 export default function Layout() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const { user, logout } = useAuth();
   const canAnalytics = canViewAnalytics(user?.role);
   const navigate = useNavigate();
   const location = useLocation();
   const [unread, setUnread] = useState(0);
   const [needsPlan, setNeedsPlan] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => { setMenuOpen(false); }, [location.pathname, location.search]);
 
   // ── Plan gate: signed-in users without a subscription must choose a plan ──
   useEffect(() => {
@@ -80,10 +84,24 @@ export default function Layout() {
             <GlobeMark />
             <span className="brand-name">Meridian</span>
           </Link>
-          <nav className="nav" aria-label="Main">
+          <button
+            className="nav-toggle icon-btn"
+            aria-expanded={menuOpen}
+            aria-controls="site-nav"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              {menuOpen
+                ? <path d="M6 6l12 12M18 6L6 18" />
+                : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+          <nav id="site-nav" className={`nav${menuOpen ? ' open' : ''}`} aria-label="Main">
             <NavLink to="/search?listingType=sale">{t('nav.buy')}</NavLink>
             <NavLink to="/search?listingType=rent">{t('nav.rent')}</NavLink>
             <NavLink to="/pricing">{t('nav.pricing')}</NavLink>
+            <NavLink to="/blog">{lang === 'en' ? 'Blog' : 'Blog'}</NavLink>
             <NavLink to="/contact">{t('nav.agents')}</NavLink>
             {user && <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>}
             {user && canAnalytics && <NavLink to={analyticsPath()}>{t('dash.analytics')}</NavLink>}
@@ -144,6 +162,7 @@ export default function Layout() {
               </div>
               <div>
                 <p className="footer-nav-head">{t('footer.resources')}</p>
+                <Link to="/blog">{lang === 'en' ? 'DR Real Estate Guides' : 'Guías Inmobiliarias RD'}</Link>
                 <a href="mailto:info@investwithmeridian.com">info@investwithmeridian.com</a>
                 <a href="https://wa.me/14707089223" target="_blank" rel="noopener noreferrer">WhatsApp</a>
                 <Link to="/contact">{t('footer.legal')}</Link>

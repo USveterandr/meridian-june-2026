@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { assetUrl, formatPrice, type Property } from '../api';
 import { useLang } from '../i18n';
 import { propertyPath } from '../routes';
+import { stripEmoji } from '../text';
 
 export default function PropertyCard({ p }: { p: Pick<Property,
   'id' | 'title' | 'city' | 'priceCents' | 'currency' | 'listingType' | 'propertyType' | 'bedrooms' | 'bathrooms'> & { coverUrl?: string | null; areaM2?: number | null } }) {
@@ -20,7 +21,7 @@ export default function PropertyCard({ p }: { p: Pick<Property,
         </div>
       </div>
       <div className="body">
-        <div className="title">{p.title}</div>
+        <div className="title">{stripEmoji(p.title)}</div>
         <div className="stat-row">
           <div className="stat">
             <b>

@@ -125,9 +125,9 @@ export default function Search() {
             {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{t('search.beds')}: {n}+</option>)}
           </select>
           <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label={t('search.sort')}>
-            <option value="newest">{t('search.sort')}: ✦</option>
-            <option value="price_asc">$ ↑</option>
-            <option value="price_desc">$ ↓</option>
+            <option value="newest">{t('search.sort')}: {t('sort.newest')}</option>
+            <option value="price_asc">{t('sort.priceAsc')}</option>
+            <option value="price_desc">{t('sort.priceDesc')}</option>
           </select>
           <button className="btn gold" type="submit">{t('search.go')}</button>
         </form>

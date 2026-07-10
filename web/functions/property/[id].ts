@@ -39,11 +39,21 @@ function formatPrice(priceCents: number, currency: string, listingType: string):
   return listingType === 'rent' ? `${formatted}/mo` : formatted;
 }
 
+// Emoji in <title>/OG tags look unprofessional in search results and link
+// previews — strip them from user-entered listing titles.
+function stripEmoji(input: string): string {
+  return input
+    .replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}\u{20E3}]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+// Price leads so search-result truncation (~155–160 chars) can never cut it off.
 function buildDescription(p: Property): string {
   const type = p.propertyType === 'villa' ? 'Luxury villa' : p.propertyType;
   const area = p.areaM2 ? `, ${p.areaM2} m²` : '';
   const price = formatPrice(p.priceCents, p.currency, p.listingType);
-  return `${type} for ${p.listingType} in ${p.city}, Dominican Republic. ${p.bedrooms} beds, ${p.bathrooms} baths${area}. ${price}.`;
+  return `${type} for ${p.listingType} in ${p.city}, Dominican Republic — ${price}. ${p.bedrooms} beds, ${p.bathrooms} baths${area}.`;
 }
 
 function replaceTag(html: string, pattern: RegExp, value: string): string {
@@ -72,7 +82,7 @@ export const onRequestGet: PagesFunction = async (context) => {
 
   if (!property) return response;
 
-  const title = `${property.title} — Meridian`;
+  const title = `${stripEmoji(property.title)} — Meridian`;
   const description = buildDescription(property);
   const url = `${SITE_URL}/property/${property.id}`;
   const image = property.images[0]?.url ? `${API_BASE}${property.images[0].url}` : DEFAULT_IMAGE;

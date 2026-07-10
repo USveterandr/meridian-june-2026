@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, assetUrl, formatPrice, type Property } from '../api';
+import { stripEmoji } from '../text';
 import { useLang } from '../i18n';
 import { useAuth } from '../auth';
 import PropertyMap from '../components/PropertyMap';
@@ -100,17 +101,19 @@ export default function PropertyDetail() {
 
   const seoProperty = p;
 
+  // Price leads the description so it can never be cut off by search-result
+  // truncation (Google trims at ~155–160 chars).
   useSEO({
-    title: seoProperty?.title,
+    title: seoProperty ? stripEmoji(seoProperty.title) : undefined,
     description: seoProperty ? {
-      en: `${seoProperty.propertyType === 'villa' ? 'Luxury villa' : seoProperty.propertyType} for ${seoProperty.listingType} in ${seoProperty.city}, Dominican Republic. ${seoProperty.bedrooms} beds, ${seoProperty.bathrooms} baths${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}. ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mo')}.`,
-      es: `${seoProperty.propertyType === 'villa' ? 'Villa de lujo' : seoProperty.propertyType} en ${seoProperty.listingType === 'sale' ? 'venta' : 'alquiler'} en ${seoProperty.city}, República Dominicana. ${seoProperty.bedrooms} habitaciones, ${seoProperty.bathrooms} baños${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}. ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mes')}.`,
+      en: `${seoProperty.propertyType === 'villa' ? 'Luxury villa' : seoProperty.propertyType} for ${seoProperty.listingType} in ${seoProperty.city}, Dominican Republic — ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mo')}. ${seoProperty.bedrooms} beds, ${seoProperty.bathrooms} baths${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}.`,
+      es: `${seoProperty.propertyType === 'villa' ? 'Villa de lujo' : seoProperty.propertyType} en ${seoProperty.listingType === 'sale' ? 'venta' : 'alquiler'} en ${seoProperty.city}, República Dominicana — ${formatPrice(seoProperty.priceCents, seoProperty.currency, seoProperty.listingType, '/mes')}. ${seoProperty.bedrooms} habitaciones, ${seoProperty.bathrooms} baños${seoProperty.areaM2 ? `, ${seoProperty.areaM2} m²` : ''}.`,
     } : undefined,
     canonical: seoProperty ? `https://investwithmeridian.com/property/${seoProperty.id}` : undefined,
     jsonLd: seoProperty ? {
       '@context': 'https://schema.org',
       '@type': 'Residence',
-      name: seoProperty.title,
+      name: stripEmoji(seoProperty.title),
       description: seoProperty.description,
       address: { '@type': 'PostalAddress', streetAddress: seoProperty.address, addressLocality: seoProperty.city, addressCountry: 'DO' },
       numberOfRooms: seoProperty.bedrooms,
@@ -149,7 +152,7 @@ export default function PropertyDetail() {
       <div className="container">
         <p className="eyebrow">{p.city} · {p.listingType === 'sale' ? t('listing.forSale') : t('listing.forRent')}</p>
         <div className="row-between">
-          <h1 style={{ marginBottom: 4 }}>{p.title}</h1>
+          <h1 style={{ marginBottom: 4 }}>{stripEmoji(p.title)}</h1>
           <span className="status-pill">{t(`status.${p.status}` as Parameters<typeof t>[0])}</span>
         </div>
         <p className="price" style={{ fontSize: '1.6rem' }}>

@@ -64,6 +64,8 @@ function NewsletterCapture() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('newsletter.placeholder')}
+              aria-label={t('newsletter.placeholder')}
+              autoComplete="email"
               style={{
                 flex: 1,
                 padding: '12px 16px',
@@ -72,7 +74,6 @@ function NewsletterCapture() {
                 background: 'var(--bg)',
                 color: 'var(--text)',
                 fontSize: '0.95rem',
-                outline: 'none',
               }}
               disabled={status === 'loading'}
             />

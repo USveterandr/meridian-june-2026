@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider } from './i18n';
 import { AuthProvider } from './auth';
 import Layout from './components/Layout';
@@ -24,8 +24,11 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import Profile from './pages/Profile';
 import Analytics from './pages/Analytics';
 import Contact from './pages/Contact';
+import PrivateClients from './pages/PrivateClients';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 import NotFound from './pages/NotFound';
 import './styles.css';
 
@@ -45,8 +48,24 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="signup/success" element={<SignupSuccess />} />
               <Route path="pricing" element={<Pricing />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="private-clients" element={<PrivateClients />} />
               <Route path="terms" element={<Terms />} />
               <Route path="privacy" element={<Privacy />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/:slug" element={<BlogPost />} />
+
+              {/* ── Legacy / intuitive URL aliases (avoid 404s from old links & sitemaps) ── */}
+              <Route path="buy" element={<Navigate to="/search?listingType=sale" replace />} />
+              <Route path="rent" element={<Navigate to="/search?listingType=rent" replace />} />
+              <Route path="agents" element={<Navigate to="/contact" replace />} />
+              <Route path="sign-in" element={<Navigate to="/login" replace />} />
+              <Route path="signin" element={<Navigate to="/login" replace />} />
+              <Route path="create-account" element={<Navigate to="/signup" replace />} />
+              <Route path="register" element={<Navigate to="/signup" replace />} />
+              <Route path="terms-of-service" element={<Navigate to="/terms" replace />} />
+              <Route path="privacy-policy" element={<Navigate to="/privacy" replace />} />
+              <Route path="legal-services" element={<Navigate to="/contact" replace />} />
+              <Route path="new-developments" element={<Navigate to="/search?sort=newest" replace />} />
 
               {/* ── Requires auth only (no sub gate) ── */}
               <Route path="choose-plan" element={<RequireAuth><ChoosePlan /></RequireAuth>} />
