@@ -4,3 +4,12 @@ node_modules/
 .dev.vars
 *.timestamp-*.mjs
 submodule.mobile.log
+
+# macOS noise
+.DS_Store
+
+# Local Claude settings
+.claude/
+
+# Contains personal contact data — repo is public
+marketing/uhnw-prospect-list.xlsx

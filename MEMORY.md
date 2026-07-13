@@ -1,0 +1,2 @@
+- [Deployment topology](deployment-topology.md) — where Meridian's frontend/API/domains live on Cloudflare
+- [Plan ID mismatch](plan-id-mismatch.md) — prod D1 plan IDs differ from the Stripe checkout map

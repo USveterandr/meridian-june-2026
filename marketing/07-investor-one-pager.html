@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Invest in Dominican Republic Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0A0A0A;
+    color: #F5F0E8;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(200, 170, 110, 0.3);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: #C8AA6E;
+    text-transform: uppercase;
+  }
+
+  .tagline {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.5);
+  }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 60px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #C8AA6E;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    color: #F5F0E8;
+  }
+
+  h1 span {
+    color: #C8AA6E;
+    font-style: italic;
+  }
+
+  .hero-lede {
+    font-size: 18px;
+    line-height: 1.7;
+    color: rgba(245, 240, 232, 0.75);
+    max-width: 600px;
+    font-weight: 300;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin: 60px 0;
+    background: rgba(200, 170, 110, 0.15);
+  }
+
+  .stat {
+    background: #0A0A0A;
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #C8AA6E;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.5);
+    line-height: 1.4;
+  }
+
+  /* Markets */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: #F5F0E8;
+  }
+
+  .section-sub {
+    font-size: 14px;
+    color: rgba(245, 240, 232, 0.5);
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+  }
+
+  .markets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    margin-bottom: 60px;
+    background: rgba(200, 170, 110, 0.1);
+  }
+
+  .market {
+    background: #111;
+    padding: 28px;
+  }
+
+  .market-name {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #C8AA6E;
+    margin-bottom: 10px;
+  }
+
+  .market-desc {
+    font-size: 14px;
+    color: rgba(245, 240, 232, 0.65);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .market-yield {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #F5F0E8;
+  }
+
+  .market-yield-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.4);
+    margin-top: 4px;
+  }
+
+  /* Why Meridian */
+  .features {
+    margin-bottom: 60px;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .feature {
+    padding: 28px;
+    border: 1px solid rgba(200, 170, 110, 0.2);
+  }
+
+  .feature-icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+
+  .feature-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #F5F0E8;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    color: rgba(245, 240, 232, 0.55);
+    line-height: 1.6;
+  }
+
+  /* Incentives */
+  .incentives {
+    background: rgba(200, 170, 110, 0.08);
+    border: 1px solid rgba(200, 170, 110, 0.2);
+    padding: 36px;
+    margin-bottom: 60px;
+  }
+
+  .incentives h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #C8AA6E;
+    margin-bottom: 20px;
+  }
+
+  .incentive-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .incentive-list li {
+    font-size: 13px;
+    color: rgba(245, 240, 232, 0.75);
+    line-height: 1.5;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .incentive-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #C8AA6E;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 60px 40px;
+    border-top: 1px solid rgba(200, 170, 110, 0.3);
+  }
+
+  .cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+
+  .cta p {
+    font-size: 16px;
+    color: rgba(245, 240, 232, 0.6);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  .btn {
+    display: inline-block;
+    background: #C8AA6E;
+    color: #0A0A0A;
+    padding: 16px 48px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .btn:hover { background: #D4B87A; }
+
+  .url {
+    font-size: 13px;
+    color: rgba(245, 240, 232, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(200, 170, 110, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: #C8AA6E;
+    text-transform: uppercase;
+  }
+
+  .footer-text {
+    font-size: 11px;
+    color: rgba(245, 240, 232, 0.3);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { background: white; color: #0A0A0A; }
+    .page { padding: 20px; }
+    .stat, .market, .feature, .incentives { border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo">Meridian</div>
+    <div class="tagline">Luxury Real Estate · Dominican Republic</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">The Investment Opportunity</div>
+    <h1>Where <span>Real Wealth</span><br>Meets the Caribbean.</h1>
+    <p class="hero-lede">Meridian is the Dominican Republic's premier platform for luxury real estate — connecting serious investors and lifestyle buyers with exclusive properties across Punta Cana, Cap Cana, Santo Domingo, and Las Terrenas.</p>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number">6–14%</div>
+      <div class="stat-label">Gross Rental Yield</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">10.3M</div>
+      <div class="stat-label">Tourists in 2024 (record)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">$4.2B</div>
+      <div class="stat-label">Foreign RE Investment (2024)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">7%+</div>
+      <div class="stat-label">Avg. GDP Growth / Decade</div>
+    </div>
+  </div>
+
+  <section class="markets">
+    <div class="section-title" style="grid-column: 1/-1; padding: 0 0 8px 0;">Prime Markets</div>
+  </section>
+
+  <div class="markets">
+    <div class="market">
+      <div class="market-name">Punta Cana</div>
+      <div class="market-desc">The Caribbean's #1 tourist destination. Highest rental liquidity, direct flights from 50+ cities, world-class resort infrastructure.</div>
+      <div class="market-yield">7–10%</div>
+      <div class="market-yield-label">Gross Rental Yield · From $120K</div>
+    </div>
+    <div class="market">
+      <div class="market-name">Cap Cana</div>
+      <div class="market-desc">Ultra-luxury gated community. Private marina, golf, beach club. The most exclusive Caribbean address for discerning buyers.</div>
+      <div class="market-yield">6–9%</div>
+      <div class="market-yield-label">Gross Rental Yield · From $350K</div>
+    </div>
+    <div class="market">
+      <div class="market-name">Las Terrenas</div>
+      <div class="market-desc">European expat enclave on the Samaná Peninsula. Boutique villas, untouched beaches, and the DR's highest yields for the informed investor.</div>
+      <div class="market-yield">10–14%</div>
+      <div class="market-yield-label">Gross Rental Yield · From $150K</div>
+    </div>
+    <div class="market">
+      <div class="market-name">Santo Domingo</div>
+      <div class="market-desc">The capital's luxury districts (Piantini, Naco) offer predictable long-term income from professional tenants and growing urban demand.</div>
+      <div class="market-yield">6–8%</div>
+      <div class="market-yield-label">Gross Rental Yield · From $100K</div>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="eyebrow" style="margin-bottom: 8px;">Why Meridian</div>
+    <div class="section-title">The Platform Built for This Market</div>
+    <div class="section-sub">Everything you need to find, evaluate, and acquire DR real estate — in one place.</div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Curated Search</div>
+        <div class="feature-desc">Filter by location, price, type, and amenities. Every listing is verified with real photos and full specifications.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Direct Messaging</div>
+        <div class="feature-desc">Message sellers and agents directly. No middlemen, no mystery brokers, no information bottlenecks.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-title">Smart Matching</div>
+        <div class="feature-desc">Post your requirements and receive instant alerts when new listings match your criteria.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚖️</div>
+        <div class="feature-title">Legal on Platform</div>
+        <div class="feature-desc">Verified Dominican notaries and lawyers are listed on Meridian, ready to guide you through the purchase process.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Bilingual</div>
+        <div class="feature-desc">Full English and Spanish support. Built for international buyers and the Dominican diaspora alike.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Analytics</div>
+        <div class="feature-desc">Sellers and agents get real-time visibility into listing views, inquiries, and lead activity.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="incentives">
+    <h3>Government Investment Incentives</h3>
+    <ul class="incentive-list">
+      <li><strong>Law 158-01:</strong> 10-year tax exemption on rental income, property tax, and capital gains for tourism-zone properties</li>
+      <li><strong>Law 171-07:</strong> Permanent residency granted for investments of $200K+ in DR real estate</li>
+      <li><strong>Foreign Ownership:</strong> Same rights as Dominican citizens — freehold title, no restrictions</li>
+      <li><strong>Capital Gains Tax:</strong> Primary residence exempt; 27% on investment property gains</li>
+      <li><strong>Annual Property Tax:</strong> 1% on value above ~$155K; exempted in tourism zones</li>
+      <li><strong>No Wealth Tax:</strong> No estate or inheritance tax for foreign nationals</li>
+    </ul>
+  </div>
+
+  <section class="cta">
+    <h2>Begin Your Search</h2>
+    <p>Explore curated luxury properties across the Dominican Republic.<br>Browse, save, message — all in one platform.</p>
+    <a href="https://investwithmeridian.com" class="btn">Browse Properties</a>
+    <div class="url">investwithmeridian.com</div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Meridian</div>
+    <div class="footer-text">
+      investwithmeridian.com<br>
+      The definitive platform for DR luxury real estate.<br>
+      © 2026 Meridian Real Estate. All rights reserved.
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
