@@ -1,3 +1,5 @@
+# Meridian — investwithmeridian.com
+
 User-agent: *
 Allow: /
 Disallow: /api/
@@ -5,9 +7,58 @@ Disallow: /dashboard/
 Disallow: /messages/
 Disallow: /favorites/
 Disallow: /requirements/
+Crawl-delay: 2
+
+# ── AI / LLM crawlers: explicitly welcome ──────────────────────────────
+# Content discovery by AI assistants (ChatGPT, Claude, Gemini, Perplexity)
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /api/
+
+# LLM content index
+# See also: https://investwithmeridian.com/llms.txt
 
 # Sitemap
 Sitemap: https://investwithmeridian.com/sitemap.xml
-
-# Crawl delay (be polite to bots)
-Crawl-delay: 2

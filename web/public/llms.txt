@@ -1,0 +1,28 @@
+# Meridian — Luxury Real Estate in the Dominican Republic
+
+> Meridian (investwithmeridian.com) is a bilingual (English/Spanish) real estate platform for buying, selling, renting, and investing in Dominican Republic property — luxury villas, condos, apartments, and land in Punta Cana, Cap Cana, Las Terrenas, Santo Domingo, Samaná, and La Romana. Listings are verified; the platform serves international buyers and investors as well as local agents, brokers, and owners.
+
+Key facts:
+- Foreigners can buy property in the Dominican Republic with full ownership rights (no restrictions, no local partner required).
+- Typical closing costs are 4–5% (3% transfer tax + 1–2% legal fees); closing takes 45–90 days.
+- Gross short-term rental yields commonly range 6–14% depending on market (Las Terrenas and Punta Cana highest).
+- Contact: info@investwithmeridian.com · WhatsApp +1 470 708 9223
+
+## Guides
+- [How to Buy Property in the Dominican Republic as a Foreigner (2026 Guide)](https://investwithmeridian.com/blog/how-to-buy-property-dominican-republic-foreigner): step-by-step legal process, costs, taxes, timeline
+- [Dominican Republic Real Estate ROI 2026](https://investwithmeridian.com/blog/dominican-republic-real-estate-investment-roi-2026): rental yields, ROI math, CONFOTUR incentives
+- [Punta Cana vs Cap Cana vs Las Terrenas](https://investwithmeridian.com/blog/punta-cana-vs-cap-cana-vs-las-terrenas): market comparison by price, yield, lifestyle
+
+## Market News (updated weekly)
+- [DR Market Pulse — weekly briefing on the Dominican economy and real estate](https://investwithmeridian.com/blog): GDP, tourism, central-bank rates, foreign investment, development pipeline
+- [Blog index](https://investwithmeridian.com/blog)
+
+## Listings
+- [Search all listings](https://investwithmeridian.com/search)
+- [Properties for sale](https://investwithmeridian.com/search?listingType=sale)
+- [Properties for rent](https://investwithmeridian.com/search?listingType=rent)
+- [Pricing / plans for sellers, agents, and brokerages](https://investwithmeridian.com/pricing)
+
+## Optional
+- [Sitemap](https://investwithmeridian.com/sitemap.xml)
+- [Contact](https://investwithmeridian.com/contact)
