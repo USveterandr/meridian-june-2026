@@ -13,6 +13,106 @@ export interface BlogArticle {
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    slug: 'dominican-republic-market-pulse-july-2026',
+    titleEn: 'DR Market Pulse — July 2026: Record Investment, Rate Cuts Ahead, and a Building Boom in the East',
+    titleEs: 'Pulso del Mercado RD — Julio 2026: Inversión Récord, Bajas de Tasas a la Vista y Auge de Construcción en el Este',
+    descriptionEn:
+      'Weekly briefing on the Dominican economy and real estate: 4–5% GDP growth, record $5B foreign investment, stable rates at 5.25%, and the new wave of Punta Cana and Cap Cana developments.',
+    descriptionEs:
+      'Resumen semanal de la economía y bienes raíces dominicanos: crecimiento del PIB de 4–5%, inversión extranjera récord de $5 mil millones, tasas estables en 5.25% y la nueva ola de desarrollos en Punta Cana y Cap Cana.',
+    datePublished: '2026-07-13',
+    readingMins: 6,
+    category: 'Market Pulse',
+    bodyEn: `## The Big Picture: Growth Is Back
+
+The Dominican economy has found its footing again. After growth moderated to about 2.1% in 2025, economic activity expanded 4.1% year-over-year in the first quarter of 2026 — nearly double last year's average — and forecasters now project **4.5–4.8% GDP growth for the full year**, with the IMF's outlook reaching as high as 5.5%. That keeps the DR among the fastest-growing economies in Latin America and the Caribbean.
+
+Three engines are doing the work: tourism, remittances, and construction.
+
+## Tourism: A Record Year in the Making
+
+The country welcomed **1.22 million visitors in January alone**, up 5.5% from a year earlier, and 2026 is on pace to break the 11-million-arrival record. The World Travel & Tourism Council estimates tourism will contribute roughly **US$21 billion to GDP this year — about 16% of the entire economy**. New airlift from the US and Europe keeps feeding the east coast, where a record 17,000 daily tourists were counted at peak.
+
+Why it matters for property owners: every new route into Punta Cana International is direct fuel for short-term rental demand and nightly rates.
+
+## Money: Rates Steady, Cuts Coming
+
+The Central Bank (BCRD) held its policy rate at **5.25%** at its May meeting, with inflation running about **3.7% — comfortably inside the 3–5% target band**. Analyst consensus expects **25–75 basis points of cuts in the second half of 2026**. Cheaper peso financing historically pushes local buyers into the market, tightening inventory in Santo Domingo's prime districts first.
+
+Remittances — the quiet backbone of Dominican housing demand — reached **$10.75 billion** last year and keep climbing.
+
+## Foreign Investment: Fourth Record in a Row
+
+Foreign direct investment hit **US$5.03 billion in 2025**, the fourth consecutive annual record — and tourism plus real estate together capture **about 42% of all FDI** entering the country. International capital is voting with its feet, and it is voting for the coast.
+
+## Development Watch: What's Being Built
+
+The construction pipeline in the East is the busiest in the Caribbean right now:
+
+- **Cap Cana** — MAREA Golf & Spa Residences (41 ultra-luxury units, delivery 2028), Core Residences, and boutique projects like Galia overlooking the Las Iguanas golf course.
+- **Downtown Punta Cana** — KASA Art of Living (109 units, 2028) and ARIA Suites & Residences (174 residences plus 113 commercial spaces, 2027).
+- **Bávaro / Coral Golf Resort** — Coral Lake: 330 furnished lake-view apartments with four pools, sky bar, and coworking.
+- More than **4,000 additional hotel rooms** are under development in the Punta Cana region on top of 55,000 existing.
+
+Analysts expect **3–8% price appreciation over the next 12 months** in the strongest micro-markets — Cap Cana and Punta Cana's gated communities lead the list.
+
+## What This Means for You
+
+**Buyers:** the window before rate cuts is historically the negotiating sweet spot — sellers price against today's financing costs, not tomorrow's.
+
+**Investors:** pre-construction in the 2027–2028 delivery pipeline offers the steepest discount to finished product, and tourism fundamentals keep de-risking the rental thesis.
+
+**Sellers:** record FDI and a thickening buyer pool mean well-priced, well-presented listings are moving faster than they did a year ago.
+
+---
+
+*Meridian publishes this Market Pulse weekly. Explore verified listings across Punta Cana, Cap Cana, Santo Domingo, and Samaná at **investwithmeridian.com**.*`,
+    bodyEs: `## Panorama General: El Crecimiento Regresó
+
+La economía dominicana recuperó su ritmo. Tras moderarse a cerca de 2.1% en 2025, la actividad económica creció **4.1% interanual en el primer trimestre de 2026** — casi el doble del promedio del año pasado — y las proyecciones apuntan a un **crecimiento del PIB de 4.5–4.8% para todo el año**, con el FMI estimando hasta 5.5%. Esto mantiene a la RD entre las economías de más rápido crecimiento de América Latina y el Caribe.
+
+Tres motores impulsan el avance: turismo, remesas y construcción.
+
+## Turismo: Camino a un Año Récord
+
+El país recibió **1.22 millones de visitantes solo en enero**, un 5.5% más que el año anterior, y 2026 va camino a romper el récord de 11 millones de llegadas. El World Travel & Tourism Council estima que el turismo aportará unos **US$21 mil millones al PIB este año — cerca del 16% de toda la economía**. Las nuevas rutas aéreas desde EE.UU. y Europa siguen alimentando la costa este, donde se contabilizó un récord de 17,000 turistas diarios en temporada alta.
+
+Por qué importa a los propietarios: cada nueva ruta hacia el aeropuerto de Punta Cana es combustible directo para la demanda de alquiler vacacional y las tarifas por noche.
+
+## Dinero: Tasas Estables, Bajas en Camino
+
+El Banco Central (BCRD) mantuvo su tasa de política en **5.25%** en su reunión de mayo, con la inflación en torno a **3.7% — dentro del rango meta de 3–5%**. El consenso de analistas espera **recortes de 25–75 puntos básicos en la segunda mitad de 2026**. El financiamiento en pesos más barato históricamente empuja a los compradores locales al mercado, ajustando primero el inventario en los distritos premium de Santo Domingo.
+
+Las remesas — la columna silenciosa de la demanda de vivienda dominicana — alcanzaron **$10.75 mil millones** el año pasado y siguen subiendo.
+
+## Inversión Extranjera: Cuarto Récord Consecutivo
+
+La inversión extranjera directa alcanzó **US$5.03 mil millones en 2025**, el cuarto récord anual consecutivo — y turismo más bienes raíces capturan **cerca del 42% de toda la IED** que entra al país. El capital internacional está votando con los pies, y vota por la costa.
+
+## Radar de Desarrollos: Qué se Está Construyendo
+
+El pipeline de construcción en el Este es el más activo del Caribe en este momento:
+
+- **Cap Cana** — MAREA Golf & Spa Residences (41 unidades ultra-lujo, entrega 2028), Core Residences y proyectos boutique como Galia con vista al campo de golf Las Iguanas.
+- **Downtown Punta Cana** — KASA Art of Living (109 unidades, 2028) y ARIA Suites & Residences (174 residencias más 113 espacios comerciales, 2027).
+- **Bávaro / Coral Golf Resort** — Coral Lake: 330 apartamentos amueblados con vista al lago, cuatro piscinas, sky bar y coworking.
+- Más de **4,000 habitaciones hoteleras adicionales** en desarrollo en la región de Punta Cana, sobre las 55,000 existentes.
+
+Los analistas esperan una **apreciación de precios de 3–8% en los próximos 12 meses** en los micro-mercados más fuertes — Cap Cana y las comunidades cerradas de Punta Cana encabezan la lista.
+
+## Qué Significa Para Ti
+
+**Compradores:** la ventana antes de los recortes de tasas es históricamente el mejor momento para negociar — los vendedores fijan precios según el financiamiento de hoy, no el de mañana.
+
+**Inversionistas:** la preconstrucción con entregas 2027–2028 ofrece el mayor descuento frente al producto terminado, y los fundamentos del turismo siguen reduciendo el riesgo de la tesis de alquiler.
+
+**Vendedores:** la IED récord y un grupo creciente de compradores significan que las propiedades bien tasadas y bien presentadas se mueven más rápido que hace un año.
+
+---
+
+*Meridian publica este Pulso del Mercado cada semana. Explora propiedades verificadas en Punta Cana, Cap Cana, Santo Domingo y Samaná en **investwithmeridian.com**.*`,
+  },
+  {
     slug: 'how-to-buy-property-dominican-republic-foreigner',
     titleEn: 'How to Buy Property in the Dominican Republic as a Foreigner (2026 Guide)',
     titleEs: 'Cómo Comprar Propiedad en República Dominicana como Extranjero (Guía 2026)',

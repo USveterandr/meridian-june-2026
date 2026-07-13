@@ -7,6 +7,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Buying Guide': '#C8AA6E',
   'Investment': '#5A8A6E',
   'Location Guide': '#5A6E8A',
+  'Market Pulse': '#8A5A6E',
 };
 
 export default function Blog() {
