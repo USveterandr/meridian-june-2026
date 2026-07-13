@@ -185,3 +185,32 @@ const urls = [
 writeFileSync('dist/sitemap.xml',
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
 console.log(`Sitemap: ${urls.length} URLs written to dist/sitemap.xml`);
+
+// ── Homepage: inject static H1 + crawlable content into dist/index.html ────
+// Bing's live URL test flags "H1 tag missing" because the hero renders
+// client-side only. This static block is replaced by React on mount, but
+// gives crawlers (and non-JS agents) real content. IMPORTANT: this must run
+// LAST — the blog/property prerender steps use dist/index.html as their
+// empty-#root shell.
+{
+  const cityCounts = {};
+  for (const p of properties) cityCounts[p.city] = (cityCounts[p.city] ?? 0) + 1;
+  const cities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const homeBody =
+    `<main class="section"><div class="container">` +
+    `<h1>Luxury Real Estate in the Dominican Republic</h1>` +
+    `<p>Meridian is a bilingual platform for buying, renting, and investing in verified Dominican Republic properties — luxury villas, condos, apartments, and land in Punta Cana, Cap Cana, Las Terrenas, Santo Domingo, and Samaná.</p>` +
+    `<h2>Explore by city</h2>` +
+    `<ul>${cities.map(([c, n]) => `<li><a href="/search?q=${encodeURIComponent(c)}">${esc(c)}</a> — ${n} listing${n === 1 ? '' : 's'}</li>`).join('')}</ul>` +
+    `<h2>Start browsing</h2>` +
+    `<ul>` +
+    `<li><a href="/search?listingType=sale">Properties for sale</a></li>` +
+    `<li><a href="/search?listingType=rent">Properties for rent</a></li>` +
+    `<li><a href="/blog">DR real estate guides &amp; weekly market news</a></li>` +
+    `<li><a href="/pricing">Plans for sellers, agents, and brokerages</a></li>` +
+    `</ul>` +
+    `</div></main>`;
+  const home = shell.replace(/<div id="root">\s*<\/div>/, `<div id="root">${homeBody}</div>`);
+  writeFileSync('dist/index.html', home);
+  console.log('Homepage: static H1 + content injected into dist/index.html');
+}
