@@ -225,6 +225,37 @@ properties.patch('/:id{[0-9]+}', requireAuth, async (c) => {
   if (!parsed.success) return c.json({ error: 'Please correct the highlighted fields.', fields: flattenZodError(parsed.error) }, 400);
   const p = parsed.data;
 
+  // Re-activating a listing counts against the plan limit, exactly like
+  // creating one — otherwise the create-time check is trivially bypassed by
+  // deactivating, creating a new listing, and flipping the old one back on.
+  const reactivating = p.status === 'active' && prop.status !== 'active';
+  if (reactivating && user.role !== 'admin') {
+    const sub = await c.env.DB.prepare(
+      `SELECT s.current_period_end, pl.features FROM subscriptions s
+       JOIN plans pl ON s.plan_id = pl.id
+       WHERE s.user_id = ? AND s.status IN ('active','trialing')
+       ORDER BY s.created_at DESC LIMIT 1`
+    ).bind(user.id).first<{ current_period_end: string | null; features: string }>();
+    const subValid = sub && (!sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now());
+    const features: string[] = subValid ? JSON.parse(sub!.features ?? '[]') : [];
+    const limit = features.includes('unlimited_listings') ? Infinity
+      : features.includes('listings_limit_100') ? 100
+      : 1;
+    if (limit !== Infinity) {
+      const count = await c.env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM properties WHERE owner_id = ? AND id != ? AND status NOT IN ('sold','rented','inactive')`
+      ).bind(user.id, id).first<{ n: number }>();
+      if ((count?.n ?? 0) >= limit) {
+        return c.json({
+          error: limit === 1
+            ? 'Your FREE Start plan includes 1 active listing. Upgrade your plan to activate more properties.'
+            : `Your plan allows up to ${limit} active listings. Upgrade to activate more properties.`,
+          upgrade: true,
+        }, 403);
+      }
+    }
+  }
+
   const map: Array<[keyof typeof p, string, (v: unknown) => unknown]> = [
     ['title', 'title', (v) => v], ['description', 'description', (v) => v],
     ['propertyType', 'property_type', (v) => v], ['listingType', 'listing_type', (v) => v],
