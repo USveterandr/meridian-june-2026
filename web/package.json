@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/prerender-blog.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/prerender-blog.mjs && node scripts/prerender-properties.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
