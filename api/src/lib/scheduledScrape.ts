@@ -1,0 +1,73 @@
+// Scheduled listing ingestion — runs from the Worker cron (Mon/Wed/Fri).
+//
+// Pulls fresh Dominican Republic listings from every configured source and
+// imports the ones that qualify, keeping inventory growing without manual
+// admin action. Each source is optional: if its secret isn't set, it is
+// skipped with a log line rather than failing the whole run.
+//
+// Sources:
+//  - supercasas.com via ScrapingBee (SCRAPINGBEE_API_KEY) — category rotates
+//    by weekday so the week covers apartments, houses, and villas.
+//  - EveryListing WWLS pipe (EVERYLISTING_API_USER / EVERYLISTING_API_PASS).
+//
+// Imported listings are owned by the platform account
+// (admin@investwithmeridian.com), falling back to user id 1.
+
+import { importScrapedProperties } from './scraper';
+import { fetchSupercasasListings, type SupercasasCategory } from './portals/supercasas';
+import { fetchAndNormalizeEveryListingProperties } from './everylisting';
+import { logger } from './logger';
+import type { Bindings } from '../types';
+
+// Mon → apartamentos, Wed → casas, Fri → villas (UTC day-of-week).
+const CATEGORY_BY_DAY: Record<number, SupercasasCategory> = {
+  1: 'apartamentos',
+  3: 'casas',
+  5: 'villas',
+};
+
+export async function runScheduledScrape(env: Bindings): Promise<{ imported: number; sources: string[] }> {
+  const owner = await env.DB
+    .prepare(`SELECT id FROM users WHERE email = 'admin@investwithmeridian.com'`)
+    .first<{ id: number }>();
+  const ownerId = owner?.id ?? 1;
+
+  let imported = 0;
+  const sources: string[] = [];
+
+  // ── supercasas.com (rotating category) ────────────────────────────────
+  if (env.SCRAPINGBEE_API_KEY) {
+    const category = CATEGORY_BY_DAY[new Date().getUTCDay()] ?? 'apartamentos';
+    try {
+      const listings = await fetchSupercasasListings(env.SCRAPINGBEE_API_KEY, category);
+      const n = await importScrapedProperties(env.DB, env.ASSETS, listings, ownerId);
+      imported += n;
+      sources.push(`supercasas/${category}:${n}`);
+      logger.info('Scheduled scrape: supercasas complete', { category, fetched: listings.length, imported: n });
+    } catch (err) {
+      logger.error('Scheduled scrape: supercasas failed', { error: err instanceof Error ? err.message : err });
+    }
+  } else {
+    logger.info('Scheduled scrape: SCRAPINGBEE_API_KEY not set — skipping supercasas');
+  }
+
+  // ── EveryListing WWLS pipe ────────────────────────────────────────────
+  if (env.EVERYLISTING_API_USER && env.EVERYLISTING_API_PASS) {
+    try {
+      const qualifying = await fetchAndNormalizeEveryListingProperties(
+        { user: env.EVERYLISTING_API_USER, pass: env.EVERYLISTING_API_PASS },
+        10
+      );
+      const n = await importScrapedProperties(env.DB, env.ASSETS, qualifying, ownerId);
+      imported += n;
+      sources.push(`everylisting:${n}`);
+      logger.info('Scheduled scrape: everylisting complete', { qualifying: qualifying.length, imported: n });
+    } catch (err) {
+      logger.error('Scheduled scrape: everylisting failed', { error: err instanceof Error ? err.message : err });
+    }
+  } else {
+    logger.info('Scheduled scrape: EveryListing credentials not set — skipping');
+  }
+
+  return { imported, sources };
+}

@@ -107,11 +107,20 @@ app.notFound((c) => c.json({ error: 'Not found.' }, 404));
 
 export { app };
 
+const SCRAPE_CRON = '0 7 * * 1,3,5';
+
 export default {
   fetch: app.fetch,
-  // Daily sweep: cancels subscriptions/trials past their current_period_end
-  // and reverts any role they granted. See lib/subscriptions.ts.
-  scheduled: async (_event, env, _ctx) => {
+  // Two cron triggers (see wrangler.toml):
+  //  - daily 06:00 UTC  → subscription expiration sweep
+  //  - Mon/Wed/Fri 07:00 UTC → listing ingestion from configured sources
+  scheduled: async (event, env, _ctx) => {
+    if (event.cron === SCRAPE_CRON) {
+      const { runScheduledScrape } = await import('./lib/scheduledScrape');
+      const result = await runScheduledScrape(env);
+      logger.info('Scheduled listing scrape complete', result);
+      return;
+    }
     const result = await expireSubscriptions(env.DB);
     logger.info('Subscription expiration sweep complete', result);
   },
