@@ -188,6 +188,7 @@ const urls = [
   entry(`${SITE}/signup`, { changefreq: 'monthly', priority: '0.7' }),
   entry(`${SITE}/login`, { changefreq: 'monthly', priority: '0.5' }),
   entry(`${SITE}/blog`, { changefreq: 'weekly', priority: '0.85' }),
+  entry(`${SITE}/market-index`, { changefreq: 'weekly', priority: '0.85' }),
   ...BLOG_ARTICLES.map((a) => entry(`${SITE}/blog/${a.slug}`, { lastmod: a.datePublished, changefreq: 'monthly', priority: '0.9' })),
   ...properties.map((p) => entry(`${SITE}/property/${p.id}`, { lastmod: (p.updatedAt ?? p.createdAt ?? today).slice(0, 10), changefreq: 'weekly', priority: '0.8' })),
 ];

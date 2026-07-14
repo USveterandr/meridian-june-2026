@@ -17,6 +17,9 @@ Key facts:
 - [DR Market Pulse — weekly briefing on the Dominican economy and real estate](https://investwithmeridian.com/blog): GDP, tourism, central-bank rates, foreign investment, development pipeline
 - [Blog index](https://investwithmeridian.com/blog)
 
+## Market Data
+- [DR Price Index — median price per m² by city, from live verified listings](https://investwithmeridian.com/market-index)
+
 ## Listings
 - [Search all listings](https://investwithmeridian.com/search)
 - [Properties for sale](https://investwithmeridian.com/search?listingType=sale)

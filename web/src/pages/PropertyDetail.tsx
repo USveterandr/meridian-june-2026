@@ -6,6 +6,7 @@ import { useLang } from '../i18n';
 import { useAuth } from '../auth';
 import PropertyMap from '../components/PropertyMap';
 import ShareButtons from '../components/ShareButtons';
+import RoiCalculator from '../components/RoiCalculator';
 import { useSEO } from '../seo';
 
 export default function PropertyDetail() {
@@ -191,6 +192,13 @@ export default function PropertyDetail() {
                   {t('detail.tour')} ↗
                 </a>
               </p>
+            )}
+
+            {/* ─── ROI Calculator (sale listings only) ─── */}
+            {p.listingType === 'sale' && (
+              <div style={{ marginTop: 32 }}>
+                <RoiCalculator priceCents={p.priceCents} />
+              </div>
             )}
 
             {/* ─── Google Maps location ─── */}

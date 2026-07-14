@@ -162,6 +162,7 @@ export default function Layout() {
               </div>
               <div>
                 <p className="footer-nav-head">{t('footer.resources')}</p>
+                <Link to="/market-index">{lang === 'en' ? 'DR Price Index ($/m²)' : 'Índice de Precios ($/m²)'}</Link>
                 <Link to="/blog">{lang === 'en' ? 'DR Real Estate Guides' : 'Guías Inmobiliarias RD'}</Link>
                 <a href="mailto:info@investwithmeridian.com">info@investwithmeridian.com</a>
                 <a href="https://wa.me/14707089223" target="_blank" rel="noopener noreferrer">WhatsApp</a>
