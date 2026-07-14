@@ -18,6 +18,7 @@ const market = new Hono<AppEnv>();
 
 type RawRow = {
   city: string;
+  currency: string;
   price_per_m2: number;
 };
 
@@ -29,15 +30,24 @@ type IndexEntry = {
   maxPricePerM2: number;
 };
 
+// Fallback when the DOP_USD_RATE var isn't set (≈58.9 DOP/USD, July 2026).
+// Override in wrangler.toml [vars] as the peso moves — precision matters less
+// than order of magnitude here; a stale rate is a few % off, an unconverted
+// DOP price is 5,800% off.
+const DEFAULT_DOP_USD_RATE = 58.9;
+
 // SQLite doesn't have a built-in MEDIAN — we fetch all rows sorted and
 // compute the median in TypeScript. This is fast enough for hundreds to
 // a few thousand rows.
 market.get('/price-per-m2', async (c) => {
+  // Sale listings only: mixing monthly rents into sale prices per m² would
+  // make the index meaningless.
   const { results } = await c.env.DB
     .prepare(
-      `SELECT city, CAST(price_cents AS REAL) / area_m2 AS price_per_m2
+      `SELECT city, currency, CAST(price_cents AS REAL) / area_m2 AS price_per_m2
        FROM properties
        WHERE status = 'active'
+         AND listing_type = 'sale'
          AND area_m2 IS NOT NULL
          AND area_m2 > 0
          AND price_cents > 0
@@ -46,12 +56,14 @@ market.get('/price-per-m2', async (c) => {
     .all<RawRow>();
 
   const rows = results ?? [];
+  const dopRate = Number(c.env.DOP_USD_RATE) > 0 ? Number(c.env.DOP_USD_RATE) : DEFAULT_DOP_USD_RATE;
 
-  // Group by city
+  // Group by city, normalizing DOP prices to USD.
   const byCityMap = new Map<string, number[]>();
   for (const row of rows) {
+    const usdPerM2 = row.currency === 'DOP' ? row.price_per_m2 / dopRate : row.price_per_m2;
     const list = byCityMap.get(row.city) ?? [];
-    list.push(row.price_per_m2);
+    list.push(usdPerM2);
     byCityMap.set(row.city, list);
   }
 
@@ -83,7 +95,7 @@ market.get('/price-per-m2', async (c) => {
     results: entries,
     total: entries.length,
     generatedAt: new Date().toISOString(),
-    note: 'Median USD price per m² from active listings with area data. Updated Mon/Wed/Fri after listing ingestion.',
+    note: 'Median USD price per m² from active FOR-SALE listings with area data (DOP prices converted to USD). Updated Mon/Wed/Fri after listing ingestion.',
   });
 });
 

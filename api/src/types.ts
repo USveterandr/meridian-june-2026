@@ -19,6 +19,8 @@ export type Bindings = {
   RESEND_API_KEY?: string;
   /** Verified sender address, e.g. "Meridian <alerts@investwithmeridian.com>" — set in wrangler.toml [vars] */
   EMAIL_FROM?: string;
+  /** DOP per USD used to normalize DOP-priced listings in market stats — set in wrangler.toml [vars] */
+  DOP_USD_RATE?: string;
 };
 
 export type AuthUser = { id: number; email: string; role: string };

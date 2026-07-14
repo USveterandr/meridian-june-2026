@@ -22,6 +22,9 @@ bucket_name = "meridian-assets"
 ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-9st.pages.dev,https://meridian-mobile.pages.dev,https://investwithmeridian.com,https://investwithmeridian.isaac-trinidad.com"
 # Verified sender address for Resend (domain must be verified in resend.com dashboard).
 EMAIL_FROM = "Meridian <alerts@investwithmeridian.com>"
+# DOP per USD for normalizing DOP-priced listings in /api/market stats.
+# Update occasionally as the peso moves (≈58.9 as of July 2026).
+DOP_USD_RATE = "58.9"
 
 [observability]
 enabled = true
