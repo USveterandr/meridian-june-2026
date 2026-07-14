@@ -80,7 +80,7 @@ scrape.post('/everylisting', requireAuth, requireRole('admin'), async (c) => {
 
   try {
     const qualifying = await fetchAndNormalizeEveryListingProperties({ user, pass }, amount);
-    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, qualifying, authedUser.id);
+    const { imported: importedCount } = await importScrapedProperties(c.env.DB, c.env.ASSETS, qualifying, authedUser.id);
     return c.json({
       success: true,
       fetched: amount,
@@ -123,7 +123,7 @@ scrape.post('/supercasas', requireAuth, requireRole('admin'), async (c) => {
   const user = c.get('user');
   try {
     const listings = await fetchSupercasasListings(apiKey, category);
-    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    const { imported: importedCount } = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
     return c.json({
       success: true,
       category,
@@ -144,7 +144,7 @@ scrape.post('/remax', requireAuth, requireRole('admin'), async (c) => {
   const user = c.get('user');
   try {
     const listings = await fetchRemaxListings(apiKey);
-    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    const { imported: importedCount } = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
     return c.json({
       success: true,
       fetched: listings.length,
@@ -164,7 +164,7 @@ scrape.post('/century21', requireAuth, requireRole('admin'), async (c) => {
   const user = c.get('user');
   try {
     const listings = await fetchCentury21Listings(apiKey);
-    const importedCount = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
+    const { imported: importedCount } = await importScrapedProperties(c.env.DB, c.env.ASSETS, listings, user.id);
     return c.json({
       success: true,
       fetched: listings.length,

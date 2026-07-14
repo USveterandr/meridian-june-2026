@@ -1,5 +1,6 @@
 import { MAX_IMAGE_BYTES, sniffImageType } from './imageValidation';
 import { logger } from './logger';
+import type { PriceDrop } from './priceDropAlerts';
 
 export interface ScrapedProperty {
   title: string;
@@ -597,7 +598,14 @@ export async function importListings(
 ): Promise<number> {
   const minPriceCents = minPriceUSD * 100;
   const items = CRAWLED_DR_PROPERTIES.filter((item) => item.priceCents >= minPriceCents);
-  return importScrapedProperties(db, assets, items, ownerId);
+  const result = await importScrapedProperties(db, assets, items, ownerId);
+  return result.imported;
+}
+
+
+export interface ImportResult {
+  imported: number;
+  priceDrops: PriceDrop[];
 }
 
 /** Inserts a list of already-normalized properties, skipping duplicates by title. A failure on one item (e.g. its photo can't be uploaded) is logged and skipped rather than aborting the rest of the batch. */
@@ -606,17 +614,36 @@ export async function importScrapedProperties(
   assets: any,
   items: ScrapedProperty[],
   ownerId: number
-): Promise<number> {
+): Promise<ImportResult> {
   let count = 0;
+  const priceDrops: PriceDrop[] = [];
 
   for (const item of items) {
     try {
       // 1. Check if already exists (prevent duplicate imports)
-      const existing = await db
-        .prepare('SELECT id FROM properties WHERE title = ?')
+      const existing = (await db
+        .prepare('SELECT id, price_cents, currency FROM properties WHERE title = ?')
         .bind(item.title)
-        .first();
-      if (existing) continue;
+        .first()) as { id: number; price_cents: number; currency: string } | null;
+
+      if (existing) {
+        // Detect price drop and update price in DB
+        if (item.priceCents < existing.price_cents) {
+          await db
+            .prepare(`UPDATE properties SET price_cents = ?, updated_at = datetime('now') WHERE id = ?`)
+            .bind(item.priceCents, existing.id)
+            .run();
+          priceDrops.push({
+            propertyId: existing.id,
+            title: item.title,
+            city: item.city,
+            oldPriceCents: existing.price_cents,
+            newPriceCents: item.priceCents,
+            currency: item.currency,
+          });
+        }
+        continue;
+      }
 
       // 2. Insert property listing
       const inserted = await db
@@ -671,5 +698,5 @@ export async function importScrapedProperties(
     }
   }
 
-  return count;
+  return { imported: count, priceDrops };
 }

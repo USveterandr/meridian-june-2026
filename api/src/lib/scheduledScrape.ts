@@ -17,6 +17,7 @@ import { importScrapedProperties } from './scraper';
 import { fetchSupercasasListings, type SupercasasCategory } from './portals/supercasas';
 import { fetchAndNormalizeEveryListingProperties } from './everylisting';
 import { sendMatchAlerts } from './matchAlerts';
+import { sendPriceDropAlerts, type PriceDrop } from './priceDropAlerts';
 import { logger } from './logger';
 import type { Bindings } from '../types';
 
@@ -27,7 +28,7 @@ const CATEGORY_BY_DAY: Record<number, SupercasasCategory> = {
   5: 'villas',
 };
 
-export async function runScheduledScrape(env: Bindings): Promise<{ imported: number; sources: string[]; alertsSent: number }> {
+export async function runScheduledScrape(env: Bindings): Promise<{ imported: number; sources: string[]; alertsSent: number; dropAlertsSent: number }> {
   // D1's datetime('now') format, captured before imports so we can find the
   // listings this run created and alert matching users afterwards.
   const startedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -39,16 +40,18 @@ export async function runScheduledScrape(env: Bindings): Promise<{ imported: num
 
   let imported = 0;
   const sources: string[] = [];
+  const allPriceDrops: PriceDrop[] = [];
 
   // ── supercasas.com (rotating category) ────────────────────────────────
   if (env.SCRAPINGBEE_API_KEY) {
     const category = CATEGORY_BY_DAY[new Date().getUTCDay()] ?? 'apartamentos';
     try {
       const listings = await fetchSupercasasListings(env.SCRAPINGBEE_API_KEY, category);
-      const n = await importScrapedProperties(env.DB, env.ASSETS, listings, ownerId);
-      imported += n;
-      sources.push(`supercasas/${category}:${n}`);
-      logger.info('Scheduled scrape: supercasas complete', { category, fetched: listings.length, imported: n });
+      const result = await importScrapedProperties(env.DB, env.ASSETS, listings, ownerId);
+      imported += result.imported;
+      allPriceDrops.push(...result.priceDrops);
+      sources.push(`supercasas/${category}:${result.imported}`);
+      logger.info('Scheduled scrape: supercasas complete', { category, fetched: listings.length, imported: result.imported, drops: result.priceDrops.length });
     } catch (err) {
       logger.error('Scheduled scrape: supercasas failed', { error: err instanceof Error ? err.message : err });
     }
@@ -63,10 +66,11 @@ export async function runScheduledScrape(env: Bindings): Promise<{ imported: num
         { user: env.EVERYLISTING_API_USER, pass: env.EVERYLISTING_API_PASS },
         10
       );
-      const n = await importScrapedProperties(env.DB, env.ASSETS, qualifying, ownerId);
-      imported += n;
-      sources.push(`everylisting:${n}`);
-      logger.info('Scheduled scrape: everylisting complete', { qualifying: qualifying.length, imported: n });
+      const result = await importScrapedProperties(env.DB, env.ASSETS, qualifying, ownerId);
+      imported += result.imported;
+      allPriceDrops.push(...result.priceDrops);
+      sources.push(`everylisting:${result.imported}`);
+      logger.info('Scheduled scrape: everylisting complete', { qualifying: qualifying.length, imported: result.imported, drops: result.priceDrops.length });
     } catch (err) {
       logger.error('Scheduled scrape: everylisting failed', { error: err instanceof Error ? err.message : err });
     }
@@ -84,5 +88,16 @@ export async function runScheduledScrape(env: Bindings): Promise<{ imported: num
     }
   }
 
-  return { imported, sources, alertsSent };
+  // ── Price-drop alerts on favorites ───────────────────────────────────
+  let dropAlertsSent = 0;
+  if (allPriceDrops.length > 0) {
+    try {
+      const result = await sendPriceDropAlerts(env, allPriceDrops);
+      dropAlertsSent = result.sent;
+    } catch (err) {
+      logger.error('Price-drop alerts failed', { error: err instanceof Error ? err.message : err });
+    }
+  }
+
+  return { imported, sources, alertsSent, dropAlertsSent };
 }
