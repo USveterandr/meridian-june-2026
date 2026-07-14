@@ -6,6 +6,7 @@ import { api } from '../api';
 import { canViewAnalytics } from '../permissions';
 import { analyticsPath, profilePath } from '../routes';
 import { GlobeMark } from './Logo';
+import NewsletterPrompt from './NewsletterPrompt';
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<string>(() => {
@@ -134,6 +135,7 @@ export default function Layout() {
       <main id="main">
         <Outlet />
       </main>
+      <NewsletterPrompt />
       <footer className="site-footer">
         <div className="container">
           <div className="footer-grid">
