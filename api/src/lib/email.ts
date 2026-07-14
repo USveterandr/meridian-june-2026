@@ -1,9 +1,13 @@
-// Email engine — Resend-backed transactional + broadcast sending.
+// Email engine — provider-agnostic transactional + broadcast sending.
 //
-// Requires secrets/vars:
-//   npx wrangler secret put RESEND_API_KEY   (from https://resend.com)
-//   EMAIL_FROM var (wrangler.toml), e.g. "Meridian <alerts@investwithmeridian.com>"
-//   — the sending domain must be verified in Resend (DNS records) first.
+// Supports Brevo and Resend; the provider is picked by whichever secret is
+// configured (Brevo wins when both are set):
+//   npx wrangler secret put BREVO_API_KEY    (app.brevo.com/settings/keys/api)
+//   npx wrangler secret put RESEND_API_KEY   (resend.com)
+// Plus the EMAIL_FROM var (wrangler.toml), e.g.
+//   "Meridian <alerts@investwithmeridian.com>"
+// The sender address/domain must be verified in the provider's dashboard
+// (Brevo: Senders & Domains) or everything lands in spam.
 //
 // Every send is recorded in email_log (kind, recipient, subject) which also
 // powers throttling (e.g. max one message-notification email per hour) and
@@ -13,10 +17,17 @@ import { logger } from './logger';
 import type { Bindings } from '../types';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+const BREVO_ENDPOINT = 'https://api.brevo.com/v3/smtp/email';
 const SITE = 'https://investwithmeridian.com';
 
 export function emailConfigured(env: Bindings): boolean {
-  return Boolean(env.RESEND_API_KEY && env.EMAIL_FROM);
+  return Boolean((env.BREVO_API_KEY || env.RESEND_API_KEY) && env.EMAIL_FROM);
+}
+
+/** Splits `Name <addr@domain>` (or a bare address) into its parts. */
+function parseFrom(from: string): { name: string; email: string } {
+  const m = from.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+  return m ? { name: m[1] || 'Meridian', email: m[2] } : { name: 'Meridian', email: from.trim() };
 }
 
 // ── Unsubscribe tokens: HMAC-SHA256(email, JWT_SECRET), hex ───────────────
@@ -78,14 +89,26 @@ export async function sendEmail(env: Bindings, opts: SendOptions): Promise<boole
     return false;
   }
   try {
-    const res = await fetch(RESEND_ENDPOINT, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: env.EMAIL_FROM, to: [opts.to], subject: opts.subject, html: opts.html }),
-    });
+    const useBrevo = Boolean(env.BREVO_API_KEY);
+    const res = useBrevo
+      ? await fetch(BREVO_ENDPOINT, {
+          method: 'POST',
+          headers: { 'api-key': env.BREVO_API_KEY!, 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            sender: parseFrom(env.EMAIL_FROM!),
+            to: [{ email: opts.to }],
+            subject: opts.subject,
+            htmlContent: opts.html,
+          }),
+        })
+      : await fetch(RESEND_ENDPOINT, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: env.EMAIL_FROM, to: [opts.to], subject: opts.subject, html: opts.html }),
+        });
     if (!res.ok) {
       const detail = await res.text().catch(() => '');
-      logger.error('Resend send failed', { status: res.status, detail: detail.slice(0, 200), kind: opts.kind });
+      logger.error(`${useBrevo ? 'Brevo' : 'Resend'} send failed`, { status: res.status, detail: detail.slice(0, 200), kind: opts.kind });
       return false;
     }
     await env.DB.prepare('INSERT INTO email_log (kind, recipient, subject) VALUES (?,?,?)')

@@ -17,6 +17,8 @@ export type Bindings = {
   GOOGLE_MAPS_SERVER_KEY?: string;
   /** Resend transactional email API key — set via: npx wrangler secret put RESEND_API_KEY */
   RESEND_API_KEY?: string;
+  /** Brevo transactional email API key (takes precedence over Resend) — set via: npx wrangler secret put BREVO_API_KEY */
+  BREVO_API_KEY?: string;
   /** Verified sender address, e.g. "Meridian <alerts@investwithmeridian.com>" — set in wrangler.toml [vars] */
   EMAIL_FROM?: string;
   /** DOP per USD used to normalize DOP-priced listings in market stats — set in wrangler.toml [vars] */
