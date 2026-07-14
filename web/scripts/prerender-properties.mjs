@@ -145,8 +145,18 @@ for (const p of properties) {
     `<p><a href="/search?listingType=${p.listingType}">Browse more Dominican Republic ${p.listingType === 'sale' ? 'properties for sale' : 'rentals'} on Meridian →</a></p>` +
     `</div></main>`;
 
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Meridian', item: SITE },
+      { '@type': 'ListItem', position: 2, name: `${p.city} real estate`, item: `${SITE}/search?q=${encodeURIComponent(p.city)}` },
+      { '@type': 'ListItem', position: 3, name: title, item: url },
+    ],
+  };
+
   let html = setHead(shell, { title: `${title} — Meridian`, description, url, image: cover, type: 'article' });
-  html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n</head>`);
+  html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>\n</head>`);
   html = html.replace(/<div id="root">\s*<\/div>/, `<div id="root">${bodyHtml}</div>`);
   mkdirSync(`dist/property/${p.id}`, { recursive: true });
   writeFileSync(`dist/property/${p.id}/index.html`, html);

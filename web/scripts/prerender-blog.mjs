@@ -93,6 +93,16 @@ for (const a of BLOG_ARTICLES) {
     publisher: { '@type': 'Organization', name: 'Meridian', url: SITE, logo: { '@type': 'ImageObject', url: `${SITE}/logo.svg` } },
     image: `${SITE}/og-image.jpg`,
   };
+  // Breadcrumbs: eligible for the breadcrumb trail display in Google results.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Meridian', item: SITE },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE}/blog` },
+      { '@type': 'ListItem', position: 3, name: a.category, item: url },
+    ],
+  };
 
   const bodyHtml =
     `<main class="section"><div class="container" style="max-width:720px">` +
@@ -104,11 +114,18 @@ for (const a of BLOG_ARTICLES) {
     `<hr /><h2 lang="es">${esc(a.titleEs)}</h2>` +
     `<p lang="es"><em>${esc(a.descriptionEs)}</em></p>` +
     `<div class="blog-body" lang="es">${renderMarkdown(a.bodyEs)}</div>` +
-    `<p><a href="/search">Browse verified Dominican Republic listings on Meridian →</a></p>` +
+    `<h2>Explore the markets covered in this guide</h2>` +
+    `<ul>` +
+    `<li><a href="/search?q=Punta%20Cana">Punta Cana properties for sale and rent</a></li>` +
+    `<li><a href="/search?q=Cap%20Cana">Cap Cana luxury villas and residences</a></li>` +
+    `<li><a href="/search?q=Santo%20Domingo">Santo Domingo apartments and houses</a></li>` +
+    `<li><a href="/search?q=Las%20Terrenas">Las Terrenas and Samaná listings</a></li>` +
+    `</ul>` +
+    `<p><a href="/search">Browse all verified Dominican Republic listings on Meridian →</a></p>` +
     `</article></div></main>`;
 
   let html = setHead(shell, { title: `${a.titleEn} — Meridian`, description: a.descriptionEn, url });
-  html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n</head>`);
+  html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>\n</head>`);
   html = html.replace(/<div id="root">\s*<\/div>/, `<div id="root">${bodyHtml}</div>`);
   writePage(`dist/blog/${a.slug}/index.html`, html);
 }
