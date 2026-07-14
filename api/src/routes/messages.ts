@@ -85,10 +85,41 @@ messages.post('/', rateLimit('send-message', 60, 3600), async (c) => {
     'INSERT INTO messages (sender_id, recipient_id, property_id, body) VALUES (?,?,?,?) RETURNING *'
   ).bind(id, recipientId, propertyId ?? null, body).first<MessageRow>();
   if (!row) return c.json({ error: 'The message could not be sent.' }, 500);
+
+  // Notify the recipient by email if they opted in — throttled to one email
+  // per hour so an active conversation doesn't flood their inbox. Fire and
+  // forget: notification failure never fails message delivery.
+  c.executionCtx.waitUntil(notifyRecipient(c.env, recipientId).catch(() => { /* logged inside */ }));
+
   return c.json({
     message: { id: row.id, fromMe: true, body: row.body, propertyId: row.property_id, createdAt: row.created_at },
   }, 201);
 });
+
+async function notifyRecipient(env: AppEnv['Bindings'], recipientId: number): Promise<void> {
+  const { emailConfigured, recentlyEmailed, sendEmail, renderEmail, unsubscribeToken } = await import('../lib/email');
+  if (!emailConfigured(env)) return;
+
+  const recipient = await env.DB.prepare(
+    'SELECT email, first_name, notify_messages FROM users WHERE id = ?'
+  ).bind(recipientId).first<{ email: string; first_name: string; notify_messages: number }>();
+  if (!recipient || recipient.notify_messages !== 1) return;
+  if (await recentlyEmailed(env, recipient.email, 'message-notify', 60)) return;
+
+  const token = await unsubscribeToken(recipient.email, env.JWT_SECRET);
+  await sendEmail(env, {
+    to: recipient.email,
+    subject: 'You have a new message on Meridian',
+    kind: 'message-notify',
+    html: renderEmail({
+      heading: `${recipient.first_name}, you have a new message`,
+      bodyHtml: '<p>Someone just messaged you on Meridian — it may be about one of your listings or a property you inquired about. Quick replies close deals.</p>',
+      ctaLabel: 'Open your messages',
+      ctaUrl: 'https://investwithmeridian.com/messages',
+      unsubscribeUrl: `https://meridian-api.isaactrinidadllc.workers.dev/api/newsletter/unsubscribe?email=${encodeURIComponent(recipient.email)}&token=${token}&kind=messages`,
+    }),
+  });
+}
 
 messages.get('/unread-count', async (c) => {
   const { id } = c.get('user');

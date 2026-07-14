@@ -160,5 +160,31 @@ CREATE TABLE IF NOT EXISTS territory_cache (
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   email          TEXT PRIMARY KEY,
   lang           TEXT NOT NULL DEFAULT 'en' CHECK (lang IN ('en', 'es')),
-  subscribed_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  subscribed_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  unsubscribed   INTEGER NOT NULL DEFAULT 0
 );
+
+-- Email send log — powers throttling and newsletter dedupe.
+-- kind examples: 'match-alert', 'price-drop', 'message-notify', 'newsletter:<slug>'
+CREATE TABLE IF NOT EXISTS email_log (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  kind        TEXT NOT NULL,
+  recipient   TEXT NOT NULL COLLATE NOCASE,
+  subject     TEXT NOT NULL,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_email_log_lookup ON email_log (recipient, kind, created_at DESC);
+
+-- ── Email log ─────────────────────────────────────────────────────────────
+-- Records every outbound email (kind, recipient, subject). Powers alert
+-- throttling (recentlyEmailed) and newsletter per-article dedupe
+-- (kind = 'newsletter:<slug>'). See src/lib/email.ts.
+CREATE TABLE IF NOT EXISTS email_log (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  kind       TEXT NOT NULL,
+  recipient  TEXT NOT NULL,
+  subject    TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_email_log_recipient ON email_log (recipient, kind, created_at);
+CREATE INDEX IF NOT EXISTS idx_email_log_kind ON email_log (kind);

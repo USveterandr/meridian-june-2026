@@ -20,6 +20,8 @@ bucket_name = "meridian-assets"
 # Comma-separated list of origins allowed to call this API.
 # Update these after deploying the frontend to Cloudflare Pages.
 ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,https://meridian-9st.pages.dev,https://meridian-mobile.pages.dev,https://investwithmeridian.com,https://investwithmeridian.isaac-trinidad.com"
+# Verified sender address for Resend (domain must be verified in resend.com dashboard).
+EMAIL_FROM = "Meridian <alerts@investwithmeridian.com>"
 
 [observability]
 enabled = true
@@ -29,4 +31,6 @@ enabled = true
 # 0 7 * * 1,3,5  — Mon/Wed/Fri listing ingestion (supercasas via ScrapingBee +
 #                  EveryListing when their secrets are configured; skipped with
 #                  a log line otherwise). See src/lib/scheduledScrape.ts.
-crons = ["0 6 * * *", "0 7 * * 1,3,5"]
+# 0 10 * * 1     — Monday newsletter: send latest Market Pulse to all subscribers.
+crons = ["0 6 * * *", "0 7 * * 1,3,5", "0 10 * * 1"]
+

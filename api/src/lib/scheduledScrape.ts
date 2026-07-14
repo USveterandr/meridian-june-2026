@@ -16,6 +16,7 @@
 import { importScrapedProperties } from './scraper';
 import { fetchSupercasasListings, type SupercasasCategory } from './portals/supercasas';
 import { fetchAndNormalizeEveryListingProperties } from './everylisting';
+import { sendMatchAlerts } from './matchAlerts';
 import { logger } from './logger';
 import type { Bindings } from '../types';
 
@@ -26,7 +27,11 @@ const CATEGORY_BY_DAY: Record<number, SupercasasCategory> = {
   5: 'villas',
 };
 
-export async function runScheduledScrape(env: Bindings): Promise<{ imported: number; sources: string[] }> {
+export async function runScheduledScrape(env: Bindings): Promise<{ imported: number; sources: string[]; alertsSent: number }> {
+  // D1's datetime('now') format, captured before imports so we can find the
+  // listings this run created and alert matching users afterwards.
+  const startedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
   const owner = await env.DB
     .prepare(`SELECT id FROM users WHERE email = 'admin@investwithmeridian.com'`)
     .first<{ id: number }>();
@@ -69,5 +74,15 @@ export async function runScheduledScrape(env: Bindings): Promise<{ imported: num
     logger.info('Scheduled scrape: EveryListing credentials not set — skipping');
   }
 
-  return { imported, sources };
+  // ── New-match alert emails (the retention loop) ───────────────────────
+  let alertsSent = 0;
+  if (imported > 0) {
+    try {
+      alertsSent = await sendMatchAlerts(env, startedAt);
+    } catch (err) {
+      logger.error('Match alerts failed', { error: err instanceof Error ? err.message : err });
+    }
+  }
+
+  return { imported, sources, alertsSent };
 }

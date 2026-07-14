@@ -108,17 +108,25 @@ app.notFound((c) => c.json({ error: 'Not found.' }, 404));
 export { app };
 
 const SCRAPE_CRON = '0 7 * * 1,3,5';
+const NEWSLETTER_CRON = '0 10 * * 1';
 
 export default {
   fetch: app.fetch,
-  // Two cron triggers (see wrangler.toml):
-  //  - daily 06:00 UTC  → subscription expiration sweep
-  //  - Mon/Wed/Fri 07:00 UTC → listing ingestion from configured sources
+  // Cron triggers (see wrangler.toml):
+  //  - daily 06:00 UTC        → subscription expiration sweep
+  //  - Mon/Wed/Fri 07:00 UTC  → listing ingestion + new-match alert emails
+  //  - Monday 10:00 UTC       → newsletter: latest Market Pulse to subscribers
   scheduled: async (event, env, _ctx) => {
     if (event.cron === SCRAPE_CRON) {
       const { runScheduledScrape } = await import('./lib/scheduledScrape');
       const result = await runScheduledScrape(env);
       logger.info('Scheduled listing scrape complete', result);
+      return;
+    }
+    if (event.cron === NEWSLETTER_CRON) {
+      const { sendWeeklyNewsletter } = await import('./lib/newsletterSend');
+      const result = await sendWeeklyNewsletter(env);
+      logger.info('Weekly newsletter run complete', result);
       return;
     }
     const result = await expireSubscriptions(env.DB);

@@ -15,6 +15,10 @@ export type Bindings = {
   SCRAPINGBEE_API_KEY?: string;
   /** Google Geocoding API (server-side, unrestricted key) — set via: npx wrangler secret put GOOGLE_MAPS_SERVER_KEY */
   GOOGLE_MAPS_SERVER_KEY?: string;
+  /** Resend transactional email API key — set via: npx wrangler secret put RESEND_API_KEY */
+  RESEND_API_KEY?: string;
+  /** Verified sender address, e.g. "Meridian <alerts@investwithmeridian.com>" — set in wrangler.toml [vars] */
+  EMAIL_FROM?: string;
 };
 
 export type AuthUser = { id: number; email: string; role: string };
