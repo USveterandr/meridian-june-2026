@@ -13,6 +13,98 @@ export interface BlogArticle {
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    slug: 'dominican-republic-market-pulse-july-20-2026',
+    titleEn: 'DR Market Pulse — July 20, 2026: Record Tourism, Steady Rates, and a $1.3B Skyline Bet in Santo Domingo',
+    titleEs: 'Pulso del Mercado RD — 20 de Julio 2026: Turismo Récord, Tasas Estables y una Apuesta de US$1.3 Mil Millones por el Skyline de Santo Domingo',
+    descriptionEn:
+      'Weekly briefing on the Dominican economy and real estate: a record 6.6M visitors in H1, the BCRD holds rates at 5.25%, remittances up 6.7%, and a $1.3B seven-tower megaproject reshapes Santo Domingo’s skyline.',
+    descriptionEs:
+      'Resumen semanal de la economía y bienes raíces dominicanos: récord de 6.6 millones de visitantes en el primer semestre, el BCRD mantiene tasas en 5.25%, remesas suben 6.7% y un megaproyecto de siete torres por US$1.3 mil millones transforma el skyline de Santo Domingo.',
+    datePublished: '2026-07-20',
+    readingMins: 7,
+    category: 'Market Pulse',
+    bodyEn: `## The Big Picture: Growth Accelerates, Inflation Runs Hot
+
+Dominican economic activity expanded **4.7% year-over-year in May 2026**, up from 3.8% in April — a clear acceleration that keeps full-year GDP growth on track for the **4.5–4.8% range** forecast by the IMF and private analysts. But the expansion has a cost: consumer prices rose **5.3% year-over-year in May**, following a 5.1% increase in April, pushing inflation above the Central Bank's 3–5% target band even as medium-term expectations remain anchored near the 4.0% goal.
+
+## Tourism: A Record First Half
+
+The country welcomed **6,616,671 visitors in the first six months of 2026** — up 7.7% from the same period last year and 11% above 2024, the strongest semi-annual growth on record. June alone brought 975,012 arrivals, a 6% year-over-year gain. Authorities are projecting **12 million visitors and more than US$11.9 billion in tourism revenue** for the full year.
+
+Why it matters for property owners: sustained arrivals growth is the single strongest signal for short-term rental demand and nightly rate resilience across Punta Cana, Cap Cana, and Las Terrenas.
+
+## Money: BCRD Holds at 5.25%, Reserves Stay Strong
+
+The Central Bank (BCRD) kept its monetary policy rate unchanged at **5.25%** at its June 30 meeting, attributing recent inflation pressure to a negative supply shock from higher international oil prices rather than domestic demand overheating. International reserves stand at **US$15.8 billion — 11% of GDP and six months of import cover**, comfortably above IMF-recommended thresholds.
+
+Remittances keep climbing: **US$6.219 billion arrived in the first half of 2026**, up 6.7% year-over-year, with June alone bringing in $1.049 billion (+13.6%). The US remains the dominant source, supplying 81.4% of formal transfers. The Central Bank projects full-year remittances will top **US$12.2 billion**.
+
+## Foreign Investment: On Pace for a Fifth Record Year
+
+Foreign direct investment reached **US$1.54 billion in the first quarter of 2026**, up 6.4% year-over-year, keeping the country on track for the BCRD's full-year projection of roughly **US$5.2 billion** — which would extend 2025's record of $5.03 billion into a fifth consecutive annual high. Tourism (26.3%) and energy (23.8%) lead the sector breakdown, with real estate close behind at **15.7% of all FDI**. Between remittances, tourism, investment, and exports, the Dominican Republic is on pace to pull in more than **US$50.2 billion in foreign currency this year**.
+
+## Development Watch: Santo Domingo Goes Vertical, Cap Cana Goes Italian
+
+The building story of the week isn't in the east — it's in the capital.
+
+- **Santo Domingo Este** — The Coralia megaproject on Avenida España will bring **seven 50-story towers** combining residential, corporate, and hotel space in a roughly **US$1.3 billion investment**, now the largest private development in Greater Santo Domingo's history. Nearby, City Center by Lady Lee adds another $700 million (a shopping center plus a 300-room AC Marriott), and the 38-story, 130-meter LM38 Tower is rising in Alma Rosa.
+- **Piantini / National District** — Height limits stay tighter here, but Torre Pavilion (28 stories) and Moon Tower (27 stories, helipad, infinity pool) keep the luxury pipeline moving in the capital's established core.
+- **Cap Cana** — Tonino Lamborghini Hotels announced exclusive development rights for a branded residential tower at the marina district, its first Caribbean project, in partnership with DUNA Development and Archipelago International — with Santo Domingo and a third location to follow. Cap Cana's prime segments continue appreciating in the **10–13%** range.
+- **Las Terrenas** — The construction boom continues eight months after Marriott's Donoma Beach Resort & Spa (Autograph Collection) opened; construction permits are up 30% over the past two years, with new pre-construction activity concentrated around Playa Estillero and Punta Popy beach.
+
+## What This Means for You
+
+**Buyers:** rates have now held at 5.25% for multiple consecutive meetings — financing costs are stable and predictable, which is exactly the environment for locking in pre-construction pricing before the next leg of appreciation.
+
+**Investors:** Santo Domingo's vertical pivot (Coralia, City Center, LM38) signals institutional capital is now betting on the capital, not just the coast — worth watching for entry points ahead of delivery.
+
+**Sellers:** record tourism and a fifth straight year of FDI records mean deep, well-capitalized demand on both the coast and in the capital; well-priced listings in Cap Cana and Punta Cana in particular are moving on that 10–13% appreciation trend.
+
+---
+
+*Meridian publishes this Market Pulse weekly. Explore verified listings across Punta Cana, Cap Cana, Santo Domingo, and Samaná at **investwithmeridian.com**.*`,
+    bodyEs: `## Panorama General: El Crecimiento Se Acelera, la Inflación Sube
+
+La actividad económica dominicana creció **4.7% interanual en mayo de 2026**, frente a 3.8% en abril — una clara aceleración que mantiene el crecimiento del PIB para todo el año en el rango de **4.5–4.8%** proyectado por el FMI y analistas privados. Pero la expansión tiene un costo: los precios al consumidor subieron **5.3% interanual en mayo**, tras un incremento de 5.1% en abril, llevando la inflación por encima del rango meta de 3–5% del Banco Central, aunque las expectativas de mediano plazo permanecen ancladas cerca de la meta de 4.0%.
+
+## Turismo: Un Primer Semestre Récord
+
+El país recibió **6,616,671 visitantes en los primeros seis meses de 2026** — un 7.7% más que en el mismo período del año anterior y 11% por encima de 2024, el crecimiento semestral más fuerte registrado. Solo en junio llegaron 975,012 visitantes, un aumento interanual del 6%. Las autoridades proyectan **12 millones de visitantes y más de US$11.9 mil millones en ingresos turísticos** para todo el año.
+
+Por qué importa a los propietarios: el crecimiento sostenido de llegadas es la señal más fuerte para la demanda de alquiler vacacional y la resiliencia de las tarifas por noche en Punta Cana, Cap Cana y Las Terrenas.
+
+## Dinero: El BCRD Mantiene 5.25%, Reservas Sólidas
+
+El Banco Central (BCRD) mantuvo su tasa de política monetaria sin cambios en **5.25%** en su reunión del 30 de junio, atribuyendo la reciente presión inflacionaria a un choque de oferta negativo por los mayores precios internacionales del petróleo, más que a un recalentamiento de la demanda interna. Las reservas internacionales se ubican en **US$15.8 mil millones — 11% del PIB y seis meses de importaciones**, cómodamente por encima de los umbrales recomendados por el FMI.
+
+Las remesas siguen subiendo: **US$6.219 mil millones llegaron en el primer semestre de 2026**, un 6.7% más interanual, con junio aportando por sí solo $1.049 mil millones (+13.6%). Estados Unidos sigue siendo la fuente dominante, con el 81.4% de las transferencias formales. El Banco Central proyecta que las remesas de todo el año superarán los **US$12.2 mil millones**.
+
+## Inversión Extranjera: Camino a un Quinto Año Récord
+
+La inversión extranjera directa alcanzó **US$1.54 mil millones en el primer trimestre de 2026**, un 6.4% más interanual, manteniendo al país en camino hacia la proyección del BCRD de aproximadamente **US$5.2 mil millones** para todo el año — lo que extendería el récord de 2025 de $5.03 mil millones a un quinto máximo anual consecutivo. Turismo (26.3%) y energía (23.8%) lideran el desglose sectorial, con bienes raíces muy cerca, en **15.7% de toda la IED**. Entre remesas, turismo, inversión y exportaciones, República Dominicana va camino a captar más de **US$50.2 mil millones en divisas este año**.
+
+## Radar de Desarrollos: Santo Domingo se Va Hacia Arriba, Cap Cana se Viste de Italiano
+
+La noticia constructiva de la semana no está en el este — está en la capital.
+
+- **Santo Domingo Este** — El megaproyecto Coralia en la Avenida España traerá **siete torres de 50 pisos** que combinan espacio residencial, corporativo y hotelero, en una inversión de aproximadamente **US$1.3 mil millones**, ahora el mayor desarrollo privado en la historia del Gran Santo Domingo. Cerca de ahí, City Center by Lady Lee suma otros $700 millones (un centro comercial más un hotel AC Marriott de 300 habitaciones), y la Torre LM38, de 38 pisos y 130 metros, se levanta en Alma Rosa.
+- **Piantini / Distrito Nacional** — Los límites de altura siguen siendo más estrictos aquí, pero Torre Pavilion (28 pisos) y Moon Tower (27 pisos, helipuerto, piscina infinita) mantienen activo el pipeline de lujo en el núcleo consolidado de la capital.
+- **Cap Cana** — Tonino Lamborghini Hotels anunció derechos exclusivos de desarrollo para una torre residencial de marca en el distrito de la marina, su primer proyecto en el Caribe, en asociación con DUNA Development y Archipelago International — con Santo Domingo y una tercera ubicación por venir. Los segmentos premium de Cap Cana continúan apreciándose en el rango de **10–13%**.
+- **Las Terrenas** — El auge de construcción continúa ocho meses después de la apertura del Marriott Donoma Beach Resort & Spa (Autograph Collection); los permisos de construcción han aumentado 30% en los últimos dos años, con nueva actividad de preconstrucción concentrada alrededor de Playa Estillero y la playa Punta Popy.
+
+## Qué Significa Para Ti
+
+**Compradores:** las tasas se han mantenido en 5.25% durante varias reuniones consecutivas — el costo de financiamiento es estable y predecible, exactamente el entorno ideal para asegurar precios de preconstrucción antes del próximo tramo de apreciación.
+
+**Inversionistas:** el giro vertical de Santo Domingo (Coralia, City Center, LM38) señala que el capital institucional ahora apuesta también por la capital, no solo por la costa — vale la pena vigilar los puntos de entrada antes de las entregas.
+
+**Vendedores:** el turismo récord y un quinto año consecutivo de récords de IED significan demanda profunda y bien capitalizada tanto en la costa como en la capital; las propiedades bien tasadas en Cap Cana y Punta Cana en particular se están moviendo con esa tendencia de apreciación del 10–13%.
+
+---
+
+*Meridian publica este Pulso del Mercado cada semana. Explora propiedades verificadas en Punta Cana, Cap Cana, Santo Domingo y Samaná en **investwithmeridian.com**.*`,
+  },
+  {
     slug: 'dominican-republic-market-pulse-july-2026',
     titleEn: 'DR Market Pulse — July 2026: Record Investment, Rate Cuts Ahead, and a Building Boom in the East',
     titleEs: 'Pulso del Mercado RD — Julio 2026: Inversión Récord, Bajas de Tasas a la Vista y Auge de Construcción en el Este',
