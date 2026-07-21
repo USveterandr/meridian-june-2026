@@ -79,8 +79,8 @@ export default function Profile() {
     try {
       await api.upload<{ avatarUrl: string }>('/api/auth/me/avatar', file);
       await refreshSubscription();
-    } catch {
-      setAvatarError(t('profile.avatarError'));
+    } catch (err) {
+      setAvatarError(err instanceof ApiError ? err.message : t('profile.avatarError'));
     } finally {
       setAvatarUploading(false);
     }
@@ -92,8 +92,8 @@ export default function Profile() {
     try {
       await api.delete('/api/auth/me/avatar');
       await refreshSubscription();
-    } catch {
-      setAvatarError(t('profile.avatarError'));
+    } catch (err) {
+      setAvatarError(err instanceof ApiError ? err.message : t('profile.avatarError'));
     } finally {
       setAvatarUploading(false);
     }

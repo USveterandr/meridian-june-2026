@@ -1,4 +1,5 @@
 import type { ScrapedProperty } from './scraper';
+import { resolveMarket, TARGET_MARKETS } from './markets';
 
 // ───────────────────────────────────────────────────────────────────────────
 // EveryListing.com "WWLS Pipes" API client + normalizer
@@ -180,8 +181,17 @@ export function normalizeEveryListingProperty(raw: EveryListingRawProperty): Scr
   const title = (raw.title ?? raw.name ?? '').toString().trim();
   if (!title) return null;
 
-  const city = (raw.city ?? raw.location ?? raw.state ?? raw.province ?? '').toString().trim() || 'Unknown';
-  const address = (raw.address ?? raw.location ?? city).toString().trim();
+  // Resolve every location signal the feed provides to a canonical market so
+  // listings surface under the promoted city buckets (e.g. "Bávaro" and
+  // "Verón" both become "Punta Cana") instead of fragmenting inventory.
+  const locationSignal = [raw.address, raw.location, raw.city, raw.state, raw.province]
+    .filter(Boolean)
+    .join(' ');
+  const { city } = resolveMarket(locationSignal);
+
+  // Keep the most specific original string as the street address; fall back to
+  // the canonical city when the feed only gave us a broad location.
+  const address = (raw.address ?? raw.location ?? city).toString().trim() || city;
   const description = (raw.description ?? raw.content ?? '').toString().trim();
 
   return {
@@ -202,13 +212,44 @@ export function normalizeEveryListingProperty(raw: EveryListingRawProperty): Scr
   };
 }
 
+export interface NormalizeOptions {
+  /**
+   * When true, listings in the promoted target markets (Punta Cana, Cap Cana,
+   * Las Terrenas, Samaná) are sorted to the front of the returned list. The
+   * feed's /fetch endpoint has no server-side region filter, so this is how we
+   * bias a capped import run toward the markets the site actually advertises
+   * without dropping other qualifying inventory. Defaults to true.
+   */
+  prioritizeTargets?: boolean;
+}
+
 /** Fetches and normalizes listings, filtering out any that don't qualify. */
 export async function fetchAndNormalizeEveryListingProperties(
   creds: EveryListingCredentials,
-  amount: number = 10
+  amount: number = 10,
+  opts: NormalizeOptions = {}
 ): Promise<ScrapedProperty[]> {
   const raw = await fetchEveryListingProperties(creds, amount);
-  return raw
+  const normalized = raw
     .map(normalizeEveryListingProperty)
     .filter((p): p is ScrapedProperty => p !== null);
+  return sortByMarketPriority(normalized, opts.prioritizeTargets ?? true);
+}
+
+/**
+ * Stable-sorts target-market listings to the front when `prioritize` is set.
+ * Exported so the dry-run harness and scheduled scrape can reuse the exact
+ * ordering the import will see.
+ */
+export function sortByMarketPriority(
+  listings: ScrapedProperty[],
+  prioritize: boolean
+): ScrapedProperty[] {
+  if (!prioritize) return listings;
+  const targets = new Set(TARGET_MARKETS as readonly string[]);
+  // Decorate-sort-undecorate keeps it stable across engines.
+  return listings
+    .map((p, i) => ({ p, i, target: targets.has(p.city) }))
+    .sort((a, b) => (a.target === b.target ? a.i - b.i : a.target ? -1 : 1))
+    .map((x) => x.p);
 }

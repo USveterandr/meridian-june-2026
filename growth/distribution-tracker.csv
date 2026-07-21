@@ -1,0 +1,21 @@
+Channel,Type,URL,Language,Status,Owner,Date submitted,UTM link,Result / notes
+Google Search Console,Foundation,https://search.google.com/search-console,Both,Not started,,,,Submit sitemap; request indexing for / /agents /pricing /blog
+Bing Webmaster Tools,Foundation,https://www.bing.com/webmasters,Both,Not started,,,,BingSiteAuth.xml already served; import from GSC
+Google Business Profile,Business listing,https://business.google.com,Both,Not started,,,https://investwithmeridian.com/?utm_source=gbp&utm_medium=listing,Service-area business; consistent NAP
+Bing Places,Business listing,https://www.bingplaces.com,Both,Not started,,,,Mirror GBP details
+Apple Business Connect,Business listing,https://businessconnect.apple.com,Both,Not started,,,,Apple Maps presence
+LinkedIn Company Page,Business listing,https://www.linkedin.com/company/setup/new,EN,Not started,,,https://investwithmeridian.com/agents?utm_source=linkedin&utm_medium=profile,Also used for agent recruiting
+Facebook Business Page,Social,https://www.facebook.com/pages/create,Both,Not started,,,https://investwithmeridian.com/?utm_source=facebook&utm_medium=profile,Needed for Marketplace + ads
+Instagram Business,Social,https://www.instagram.com,ES,Not started,,,https://investwithmeridian.com/?utm_source=instagram&utm_medium=bio,Primary visual channel
+WhatsApp Business / Channel,Social,https://business.whatsapp.com,ES,Not started,,,https://investwithmeridian.com/agents?utm_source=whatsapp&utm_medium=channel,Founding-agent reminders
+Supercasas (agency profile),Portal,https://www.supercasas.com,ES,Not started,,,,VERIFY posting rules before listing
+Corotos,Portal,https://www.corotos.com.do,ES,Not started,,,,Free classifieds; verify rules
+Encuentra24 DR,Portal,https://www.encuentra24.com/dominican-rep-es,ES,Not started,,,,Real-estate vertical; verify rules
+Facebook Marketplace + DR groups,Portal,https://www.facebook.com/marketplace,ES,Not started,,,,Only post listings you hold; respect group rules
+Lamudi / Point2 / aggregators,Portal,,Both,Not started,,,,Check feed/free-profile eligibility
+DR1 community + classifieds,Portal,https://www.dr1.com,EN,Not started,,,,Expat/investor audience
+Local real-estate association (AEI),Business listing,,ES,Not started,,,,Trust signal + network
+Instagram launch post,Social post,,Both,Not started,,,https://investwithmeridian.com/?utm_source=instagram&utm_medium=post,Use §3 copy + property reel
+LinkedIn launch post,Social post,,EN,Not started,,,https://investwithmeridian.com/agents?utm_source=linkedin&utm_medium=post,Recruiting angle
+Agent outreach batch 1,Outreach,,Both,Not started,,,https://investwithmeridian.com/agents?utm_source=outreach&utm_medium=email,20-30 personalized/day; follow up in 3 days
+Agent outreach batch 2,Outreach,,Both,Not started,,,https://investwithmeridian.com/agents?utm_source=outreach&utm_medium=whatsapp,WhatsApp/IG DM template

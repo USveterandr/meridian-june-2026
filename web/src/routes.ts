@@ -67,6 +67,10 @@ export function analyticsPath() {
   return '/analytics';
 }
 
+export function adminPath() {
+  return '/admin';
+}
+
 export function contactPath() {
   return '/contact';
 }

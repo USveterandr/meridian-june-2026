@@ -11,8 +11,10 @@ import verify from './routes/verify';
 import territories from './routes/territories';
 import plans from './routes/plans';
 import users from './routes/users';
+import admin from './routes/admin';
 import newsletter from './routes/newsletter';
 import market from './routes/market';
+import growth from './routes/growth';
 import type { AppEnv, Bindings } from './types';
 import { logger } from './lib/logger';
 import { expireSubscriptions } from './lib/subscriptions';
@@ -102,8 +104,10 @@ app.route('/api/verify', verify);
 app.route('/api/territories', territories);
 app.route('/api/plans', plans);
 app.route('/api/users', users);
+app.route('/api/admin', admin);
 app.route('/api/newsletter', newsletter);
 app.route('/api/market', market);
+app.route('/api', growth); // /api/waitlist, /api/agents/status, /api/agents/claim
 
 app.notFound((c) => c.json({ error: 'Not found.' }, 404));
 

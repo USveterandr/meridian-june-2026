@@ -6,6 +6,7 @@ import { AuthProvider } from './auth';
 import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import RequireSubscription from './components/RequireSubscription';
+import RequireAdmin from './components/RequireAdmin';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import PropertyDetail from './pages/PropertyDetail';
@@ -31,6 +32,8 @@ import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import NotFound from './pages/NotFound';
 import MarketIndex from './pages/MarketIndex';
+import Agents from './pages/Agents';
+import Admin from './pages/Admin';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -59,7 +62,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               {/* ── Legacy / intuitive URL aliases (avoid 404s from old links & sitemaps) ── */}
               <Route path="buy" element={<Navigate to="/search?listingType=sale" replace />} />
               <Route path="rent" element={<Navigate to="/search?listingType=rent" replace />} />
-              <Route path="agents" element={<Navigate to="/contact" replace />} />
+              <Route path="agents" element={<Agents />} />
+              <Route path="list-your-property" element={<Navigate to="/agents" replace />} />
+              <Route path="founding-agents" element={<Navigate to="/agents" replace />} />
               <Route path="sign-in" element={<Navigate to="/login" replace />} />
               <Route path="signin" element={<Navigate to="/login" replace />} />
               <Route path="create-account" element={<Navigate to="/signup" replace />} />
@@ -84,6 +89,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="dashboard/edit/:id" element={<RequireSubscription><NewListing /></RequireSubscription>} />
               <Route path="requirements" element={<RequireSubscription><Requirements /></RequireSubscription>} />
               <Route path="analytics" element={<RequireSubscription><Analytics /></RequireSubscription>} />
+              <Route path="admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
 
               <Route path="*" element={<NotFound />} />
             </Route>

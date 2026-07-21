@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 export const ROLES = ['buyer', 'renter', 'investor', 'seller', 'landlord', 'agent', 'broker', 'lawyer', 'notary'] as const;
+// 'admin' is deliberately excluded from the public ROLES enum used at signup
+// (registerSchema) — only an existing admin can grant it, via the schemas below.
+export const ADMIN_ASSIGNABLE_ROLES = [...ROLES, 'admin'] as const;
 export const PROPERTY_TYPES = ['house', 'apartment', 'condo', 'villa', 'land', 'commercial'] as const;
 export const LISTING_TYPES = ['sale', 'rent'] as const;
 export const STATUSES = ['draft', 'active', 'pending', 'sold', 'rented', 'inactive'] as const;
@@ -26,9 +29,47 @@ export const newsletterSchema = z.object({
   lang: z.enum(['en', 'es']).default('en'),
 });
 
+export const waitlistSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  market: z.string().trim().min(1).max(60),
+  lang: z.enum(['en', 'es']).default('en'),
+});
+
+export const foundingAgentSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  name: z.string().trim().max(120).optional(),
+  phone: z.string().trim().max(40).optional(),
+  agency: z.string().trim().max(120).optional(),
+  lang: z.enum(['en', 'es']).default('en'),
+});
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   password: z.string().min(1).max(128),
+});
+
+// ── Admin-only: create/manage users directly (no self-registration limits —
+// an admin can hand out any role, including 'admin' itself) ──
+export const adminCreateUserSchema = z.object({
+  firstName: z.string().trim().min(1).max(60),
+  lastName: z.string().trim().min(1).max(60),
+  email: z.string().trim().toLowerCase().email().max(254),
+  role: z.enum(ADMIN_ASSIGNABLE_ROLES).default('buyer'),
+  phone: z.string().trim().max(30).regex(/^[+0-9 ()-]*$/).optional(),
+  locale: z.enum(['en', 'es']).default('en'),
+  // Optional: admin sets the password directly. If omitted, the server
+  // generates a temporary one and returns it once in the response.
+  password: z
+    .string()
+    .min(10, 'Password must be at least 10 characters.')
+    .max(128)
+    .regex(/[a-zA-Z]/, 'Password must include a letter.')
+    .regex(/[0-9]/, 'Password must include a number.')
+    .optional(),
+});
+
+export const adminUpdateRoleSchema = z.object({
+  role: z.enum(ADMIN_ASSIGNABLE_ROLES),
 });
 
 export const profileSchema = z.object({

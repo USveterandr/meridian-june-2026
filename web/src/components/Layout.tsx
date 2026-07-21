@@ -103,9 +103,10 @@ export default function Layout() {
             <NavLink to="/search?listingType=rent">{t('nav.rent')}</NavLink>
             <NavLink to="/pricing">{t('nav.pricing')}</NavLink>
             <NavLink to="/blog">{lang === 'en' ? 'Blog' : 'Blog'}</NavLink>
-            <NavLink to="/contact">{t('nav.agents')}</NavLink>
+            <NavLink to="/agents">{t('nav.agents')}</NavLink>
             {user && <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>}
             {user && canAnalytics && <NavLink to={analyticsPath()}>{t('dash.analytics')}</NavLink>}
+            {user && user.role === 'admin' && <NavLink to="/admin">Admin</NavLink>}
             {user && <NavLink to={profilePath()}>{t('dash.profile')}</NavLink>}
             {!user && <NavLink to="/login" id="nav-signin-btn">{t('nav.login')}</NavLink>}
             {!user && <NavLink to="/signup" className="gold" id="nav-signup-btn">{t('nav.signup')}</NavLink>}

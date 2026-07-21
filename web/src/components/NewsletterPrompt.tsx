@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation } from 'react-router-dom';
-import { api } from '../api';
+import { api, ApiError } from '../api';
 import { useLang } from '../i18n';
 
 // Site-wide newsletter capture: a dismissible slide-in card (bottom corner),
@@ -32,6 +32,7 @@ export default function NewsletterPrompt() {
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible || !shouldOffer(location.pathname)) return;
@@ -62,12 +63,14 @@ export default function NewsletterPrompt() {
     e.preventDefault();
     if (!email.trim() || status === 'loading') return;
     setStatus('loading');
+    setErrorMsg(null);
     try {
       await api.post('/api/newsletter', { email: email.trim(), lang });
       setStatus('success');
       try { localStorage.setItem(DONE_KEY, '1'); } catch { /* ignore */ }
       window.setTimeout(() => setVisible(false), 2500);
-    } catch {
+    } catch (err) {
+      setErrorMsg(err instanceof ApiError ? err.message : null);
       setStatus('error');
     }
   }
@@ -105,7 +108,7 @@ export default function NewsletterPrompt() {
               {status === 'loading' ? t('newsletter.submitting') : t('newsletter.submit')}
             </button>
           </form>
-          {status === 'error' && <p className="nl-prompt-error">{t('newsletter.error')}</p>}
+          {status === 'error' && <p className="nl-prompt-error">{errorMsg ?? t('newsletter.error')}</p>}
           <p className="nl-prompt-note">{t('newsletter.unsubscribe')}</p>
         </>
       )}

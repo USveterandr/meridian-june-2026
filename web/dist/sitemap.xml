@@ -1,71 +1,724 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <!-- Home -->
   <url>
     <loc>https://investwithmeridian.com/</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/"/>
   </url>
-
-  <!-- Search / Listings -->
   <url>
     <loc>https://investwithmeridian.com/search</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/search?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/search?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/search"/>
   </url>
-
-  <!-- Pricing -->
   <url>
     <loc>https://investwithmeridian.com/pricing</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/pricing?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/pricing?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/pricing"/>
   </url>
-
-  <!-- Contact -->
   <url>
     <loc>https://investwithmeridian.com/contact</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/contact?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/contact?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/contact"/>
   </url>
-
-  <!-- Sign Up -->
+  <url>
+    <loc>https://investwithmeridian.com/agents</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/agents?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/agents?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/agents"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/private-clients</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/private-clients?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/private-clients?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/private-clients"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/terms</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/terms?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/terms?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/terms"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/privacy</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/privacy?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/privacy?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/privacy"/>
+  </url>
   <url>
     <loc>https://investwithmeridian.com/signup</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/signup?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/signup?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/signup"/>
   </url>
-
-  <!-- Login -->
   <url>
     <loc>https://investwithmeridian.com/login</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-07-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/login?lang=en"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/login?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/login"/>
   </url>
-
+  <url>
+    <loc>https://investwithmeridian.com/blog</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/market-index</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/market-index?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/market-index?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/market-index"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-20-2026</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-20-2026?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-20-2026?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-20-2026"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-2026</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-2026?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-2026?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog/dominican-republic-market-pulse-july-2026"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/blog/how-to-buy-property-dominican-republic-foreigner</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog/how-to-buy-property-dominican-republic-foreigner?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog/how-to-buy-property-dominican-republic-foreigner?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog/how-to-buy-property-dominican-republic-foreigner"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/blog/dominican-republic-real-estate-investment-roi-2026</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog/dominican-republic-real-estate-investment-roi-2026?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog/dominican-republic-real-estate-investment-roi-2026?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog/dominican-republic-real-estate-investment-roi-2026"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/blog/punta-cana-vs-cap-cana-vs-las-terrenas</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/blog/punta-cana-vs-cap-cana-vs-las-terrenas?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/blog/punta-cana-vs-cap-cana-vs-las-terrenas?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/blog/punta-cana-vs-cap-cana-vs-las-terrenas"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/61</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/61?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/61?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/61"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/62</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/62?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/62?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/62"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/63</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/63?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/63?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/63"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/58</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/58?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/58?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/58"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/59</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/59?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/59?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/59"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/60</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/60?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/60?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/60"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/57</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/57?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/57?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/57"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/56</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/56?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/56?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/56"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/55</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/55?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/55?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/55"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/54</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/54?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/54?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/54"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/53</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/53?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/53?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/53"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/52</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/52?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/52?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/52"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/51</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/51?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/51?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/51"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/50</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/50?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/50?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/50"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/49</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/49?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/49?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/49"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/48</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/48?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/48?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/48"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/47</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/47?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/47?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/47"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/46</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/46?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/46?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/46"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/45</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/45?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/45?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/45"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/44</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/44?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/44?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/44"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/43</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/43?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/43?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/43"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/42</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/42?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/42?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/42"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/41</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/41?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/41?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/41"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/40</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/40?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/40?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/40"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/39</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/39?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/39?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/39"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/38</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/38?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/38?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/38"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/37</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/37?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/37?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/37"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/36</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/36?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/36?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/36"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/35</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/35?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/35?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/35"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/34</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/34?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/34?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/34"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/32</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/32?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/32?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/32"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/33</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/33?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/33?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/33"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/31</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/31?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/31?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/31"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/28</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/28?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/28?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/28"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/30</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/30?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/30?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/30"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/29</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/29?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/29?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/29"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/26</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/26?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/26?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/26"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/27</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/27?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/27?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/27"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/25</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/25?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/25?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/25"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/24</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/24?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/24?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/24"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/23</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/23?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/23?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/23"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/22</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/22?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/22?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/22"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/20</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/20?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/20?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/20"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/21</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/21?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/21?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/21"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/19</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/19?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/19?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/19"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/16</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/16?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/16?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/16"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/18</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/18?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/18?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/18"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/17</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/17?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/17?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/17"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/15</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/15?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/15?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/15"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/12</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/12?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/12?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/12"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/14</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/14?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/14?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/14"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/13</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/13?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/13?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/13"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/9</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/9?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/9?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/9"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/11</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/11?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/11?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/11"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/10</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/10?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/10?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/10"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/6</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/6?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/6?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/6"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/7</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/7?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/7?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/7"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/8</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/8?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/8?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/8"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/5</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/5?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/5?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/5"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/4</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/4?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/4?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/4"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/3</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/3?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/3?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/3"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/2</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/2?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/2?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/2"/>
+  </url>
+  <url>
+    <loc>https://investwithmeridian.com/property/1</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://investwithmeridian.com/property/1?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://investwithmeridian.com/property/1?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://investwithmeridian.com/property/1"/>
+  </url>
 </urlset>

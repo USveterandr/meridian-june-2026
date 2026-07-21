@@ -188,3 +188,33 @@ CREATE TABLE IF NOT EXISTS email_log (
 );
 CREATE INDEX IF NOT EXISTS idx_email_log_recipient ON email_log (recipient, kind, created_at);
 CREATE INDEX IF NOT EXISTS idx_email_log_kind ON email_log (kind);
+
+-- ── Growth: market waitlist ────────────────────────────────────────────────
+-- Emails captured from the homepage "coming soon" cards for markets that have
+-- no live inventory yet (e.g. Punta Cana before the first import fills it).
+-- One row per (email, market); re-submitting is a no-op.
+CREATE TABLE IF NOT EXISTS market_waitlist (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  email        TEXT NOT NULL COLLATE NOCASE,
+  market       TEXT NOT NULL,
+  lang         TEXT NOT NULL DEFAULT 'en',
+  created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (email, market)
+);
+CREATE INDEX IF NOT EXISTS idx_market_waitlist_market ON market_waitlist (market, created_at DESC);
+
+-- ── Growth: founding agents (first-100 free-Pro campaign) ──────────────────
+-- Claims for the launch offer: the first 100 agents/brokers get Pro free for
+-- 12 months. spot_number is assigned sequentially; the UNIQUE(email) makes a
+-- repeat claim return the same spot instead of consuming a new one.
+CREATE TABLE IF NOT EXISTS founding_agents (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  spot_number  INTEGER NOT NULL,
+  email        TEXT NOT NULL COLLATE NOCASE UNIQUE,
+  name         TEXT,
+  phone        TEXT,
+  agency       TEXT,
+  lang         TEXT NOT NULL DEFAULT 'en',
+  created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_founding_agents_spot ON founding_agents (spot_number);

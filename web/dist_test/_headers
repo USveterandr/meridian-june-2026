@@ -1,0 +1,12 @@
+# Security headers served by Cloudflare Pages for every response.
+# CSP notes:
+#  - script-src allows Google Maps JS (loaded by @vis.gl/react-google-maps).
+#  - style-src needs 'unsafe-inline' for React inline styles + Google Fonts CSS.
+#  - img-src allows https: for R2-hosted listing photos + Google Maps tiles.
+#  - connect-src allows the Meridian API worker and Maps endpoints.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://meridian-api.isaactrinidadllc.workers.dev https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'

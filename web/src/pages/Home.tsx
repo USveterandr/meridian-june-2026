@@ -20,6 +20,124 @@ const CITY_IMAGES: Record<string, { emoji: string; color: string }> = {
   'La Romana':   { emoji: '⛳', color: 'linear-gradient(135deg,#1a3a1a 0%,#3a7a3a 100%)' },
 };
 
+// Markets the site promotes up-front. When one has no live inventory yet, the
+// homepage shows a "coming soon" card with a waitlist capture instead of
+// silently omitting it — so the promise still shows, honestly labeled.
+const TARGET_MARKETS = ['Punta Cana', 'Cap Cana', 'Las Terrenas', 'Samaná'] as const;
+
+const SOON_COPY = {
+  en: {
+    title: 'Opening soon',
+    sub: "We're onboarding verified listings in these markets now. Join the waitlist and we'll email you the moment they go live.",
+    badge: 'Coming soon',
+    cta: 'Notify me',
+    placeholder: 'Your email',
+    success: "You're on the list.",
+    error: "Couldn't sign you up — try again.",
+  },
+  es: {
+    title: 'Próximamente',
+    sub: 'Estamos incorporando propiedades verificadas en estos mercados. Únete a la lista y te avisaremos apenas estén disponibles.',
+    badge: 'Próximamente',
+    cta: 'Avísame',
+    placeholder: 'Tu correo',
+    success: 'Estás en la lista.',
+    error: 'No se pudo registrar — intenta de nuevo.',
+  },
+} as const;
+
+function ComingSoonMarkets({ markets }: { markets: string[] }) {
+  const { lang } = useLang();
+  const copy = SOON_COPY[lang];
+
+  return (
+    <section className="section" style={{ background: 'var(--surface)' }}>
+      <div className="container">
+        <div className="section-head">
+          <h2>{copy.title}</h2>
+          <p>{copy.sub}</p>
+        </div>
+        <div className="city-grid">
+          {markets.map((market) => (
+            <ComingSoonCard key={market} market={market} copy={copy} lang={lang} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+type SoonCopy = { title: string; sub: string; badge: string; cta: string; placeholder: string; success: string; error: string };
+
+function ComingSoonCard({
+  market,
+  copy,
+  lang,
+}: {
+  market: string;
+  copy: SoonCopy;
+  lang: 'en' | 'es';
+}) {
+  const meta = CITY_IMAGES[market] ?? { emoji: '🏘️', color: 'linear-gradient(135deg,#333 0%,#555 100%)' };
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || status === 'loading') return;
+    setStatus('loading');
+    try {
+      await api.post('/api/waitlist', { email: email.trim(), market, lang });
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  return (
+    <div className="city-card" style={{ background: meta.color, cursor: 'default', position: 'relative' }}>
+      <span
+        style={{
+          position: 'absolute', top: 10, right: 10, fontSize: '0.62rem', letterSpacing: '0.08em',
+          textTransform: 'uppercase', padding: '3px 8px', borderRadius: 999,
+          background: 'rgba(0,0,0,0.45)', color: '#fff',
+        }}
+      >
+        {copy.badge}
+      </span>
+      <span className="city-emoji">{meta.emoji}</span>
+      <span className="city-name">{market}</span>
+      {status === 'success' ? (
+        <span className="city-count" style={{ color: '#fff' }}>✓ {copy.success}</span>
+      ) : (
+        <form onSubmit={onSubmit} style={{ display: 'flex', gap: 6, marginTop: 8, width: '100%' }}>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={copy.placeholder}
+            aria-label={`${copy.placeholder} — ${market}`}
+            autoComplete="email"
+            style={{ flex: 1, minWidth: 0, padding: '7px 9px', fontSize: '0.8rem', border: 'none', borderRadius: 4 }}
+          />
+          <button
+            className="btn gold"
+            type="submit"
+            disabled={status === 'loading'}
+            style={{ padding: '7px 12px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+          >
+            {copy.cta}
+          </button>
+        </form>
+      )}
+      {status === 'error' && (
+        <span className="city-count" style={{ color: '#ffd7d7' }}>{copy.error}</span>
+      )}
+    </div>
+  );
+}
+
 const BENEFIT_ICONS = ['🏡', '📋', '💬', '🔔'];
 
 function NewsletterCapture() {
@@ -139,7 +257,7 @@ export default function Home() {
           .catch(() => ({ city, count: 0 }))
       )
     ).then((results) => {
-      if (!cancelled) setCities(results.filter((c) => c.count > 0));
+      if (!cancelled) setCities(results);
     });
 
     return () => { cancelled = true; };
@@ -154,6 +272,8 @@ export default function Home() {
   }
 
   const canList = canListProperties(user?.role);
+  const activeCities = cities.filter((c) => c.count > 0);
+  const comingSoon = TARGET_MARKETS.filter((m) => cities.some((c) => c.city === m && c.count === 0));
 
   return (
     <main>
@@ -192,7 +312,7 @@ export default function Home() {
       </section>
 
       {/* ─── City Grid ─── */}
-      {cities.length > 0 && (
+      {activeCities.length > 0 && (
         <section className="section">
           <div className="container">
             <div className="row-between" style={{ marginBottom: '24px' }}>
@@ -200,7 +320,7 @@ export default function Home() {
               <Link className="linkish" to="/search">{t('home.cities.all')} →</Link>
             </div>
             <div className="city-grid">
-              {cities.map(({ city, count }) => {
+              {activeCities.map(({ city, count }) => {
                 const meta = CITY_IMAGES[city] ?? { emoji: '🏘️', color: 'linear-gradient(135deg,#333 0%,#555 100%)' };
                 return (
                   <Link
@@ -219,6 +339,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ─── Coming-soon markets (waitlist) ─── */}
+      {comingSoon.length > 0 && <ComingSoonMarkets markets={comingSoon} />}
 
       {/* ─── Why Meridian? ─── */}
       <section className="section">
