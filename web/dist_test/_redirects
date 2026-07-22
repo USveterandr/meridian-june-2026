@@ -1,6 +1,0 @@
-# Redirect the www subdomain to the naked domain (requires the www custom
-# domain / DNS CNAME to be attached to the Pages project in the CF dashboard).
-https://www.investwithmeridian.com/* https://investwithmeridian.com/:splat 301!
-
-# SPA fallback
-/*    /index.html   200

@@ -1,5 +1,7 @@
 node_modules/
-/dist/
+dist/
+**/dist/
+**/dist_test*/
 .wrangler/
 .dev.vars
 *.timestamp-*.mjs
