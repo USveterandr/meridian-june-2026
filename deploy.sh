@@ -55,23 +55,22 @@ else
   echo "  🌐 API URL: $WORKER_URL"
 fi
 
-# ── Step 5: Build web frontend ────────────────────────────────────────────────
+# ── Step 5: Build web frontend + Worker bundle ────────────────────────────────
 echo ""
-echo "▶ Step 5/6  Building web frontend..."
-cd "$WEB_DIR"
-
-# Set production API URL
-export VITE_API_URL="$WORKER_URL"
-echo "  VITE_API_URL=$VITE_API_URL"
+echo "▶ Step 5/6  Building web frontend + Worker (root build)..."
+cd "$ROOT"
 npm run build
-echo "  ✅ Frontend built."
+echo "  ✅ Frontend + Worker bundle built into dist/."
 
-# ── Step 6: Deploy to Cloudflare Pages ───────────────────────────────────────
+# ── Step 6: Deploy Worker (static assets + Pages Functions) ──────────────────
+# meridian-july is a Worker with static assets (migrated off Cloudflare Pages
+# -- see wrangler.jsonc), not a Pages project. Deploy from the repo root so
+# wrangler picks up wrangler.jsonc's assets.directory + main fields.
 echo ""
-echo "▶ Step 6/6  Deploying to Cloudflare Pages (meridian)..."
-cd "$WEB_DIR"
-npx wrangler pages deploy dist --project-name meridian --branch main --commit-dirty=true
-echo "  ✅ Frontend deployed to Cloudflare Pages."
+echo "▶ Step 6/6  Deploying Worker (meridian-july)..."
+cd "$ROOT"
+npx wrangler deploy
+echo "  ✅ Frontend deployed as a Worker."
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
@@ -80,7 +79,7 @@ echo "│  🎉 DEPLOYMENT COMPLETE                                 │"
 echo "└─────────────────────────────────────────────────────────┘"
 echo ""
 echo "  API Worker : $WORKER_URL"
-echo "  Web App    : https://meridian.pages.dev"
+echo "  Web App    : https://meridian-july.<your-subdomain>.workers.dev"
 echo ""
 echo "  ⚡ POST-DEPLOY CHECKLIST:"
 echo "  1. Run smoke test:"
@@ -88,8 +87,8 @@ echo "     curl $WORKER_URL/api/health"
 echo "  2. Seed subscription plans (log in as admin, then):"
 echo "     curl -X POST $WORKER_URL/api/plans/seed -H 'Authorization: Bearer YOUR_TOKEN'"
 echo "  3. If using a custom domain (investwithmeridian.com):"
-echo "     - Cloudflare Dashboard → Pages → meridian → Custom domains → Add"
+echo "     - Cloudflare Dashboard → Workers & Pages → meridian-july → Custom domains → Add"
 echo "     - Update ALLOWED_ORIGINS in api/wrangler.toml and redeploy API"
 echo "  4. Set up Google Search Console and submit:"
-echo "     https://meridian.pages.dev/sitemap.xml"
+echo "     https://investwithmeridian.com/sitemap.xml"
 echo ""
