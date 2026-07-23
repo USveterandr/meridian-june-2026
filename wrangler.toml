@@ -1,0 +1,6 @@
+name = "meridian-july"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-06-12"
+
+[vars]
+VITE_API_URL = "https://meridian-api.isaactrinidadllc.workers.dev"

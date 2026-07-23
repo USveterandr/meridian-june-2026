@@ -9,7 +9,7 @@
     "test:api": "npm run test --prefix api",
     "typecheck:api": "npm run typecheck --prefix api",
     "typecheck:web": "npm run build --prefix web",
-    "build": "npm ci --prefix web && npm run build --prefix web && rm -rf dist && cp -r web/dist dist && npx wrangler pages functions build --outdir=dist/_worker.js/ && echo '_worker.js' > dist/.assetsignore && test -f dist/index.html || (echo 'Build failed: dist/index.html missing after copy' && exit 1)",
+    "build": "npm ci --prefix web && npm run build --prefix web && rm -rf dist && cp -r web/dist dist && test -f dist/index.html || (echo 'Build failed: dist/index.html missing after copy' && exit 1)",
     "build:web": "npm run build --prefix web"
   },
   "devDependencies": {
