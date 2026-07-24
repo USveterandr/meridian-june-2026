@@ -21,6 +21,12 @@ import { expireSubscriptions } from './lib/subscriptions';
 
 const app = new Hono<AppEnv>();
 
+// Cloudflare Worker preview deployments use a version-prefixed hostname such
+// as `802fdaa8-meridian-july.<account>.workers.dev`. Keep CORS strict while
+// allowing those previews to exercise the same API as production.
+const isMeridianWorkerPreviewOrigin = (origin: string) =>
+  /^https:\/\/[a-z0-9-]+-meridian-july\.isaactrinidadllc\.workers\.dev$/i.test(origin);
+
 
 // Replace missing JWT_SECRET handling with structured logging
 app.use('*', async (c, next) => {
@@ -44,7 +50,7 @@ app.use('*', async (c, next) => {
 app.use('/api/*', async (c, next) => {
   const allowed = (c.env.ALLOWED_ORIGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean);
   const handler = cors({
-    origin: (origin) => (allowed.includes(origin) ? origin : null),
+    origin: (origin) => (allowed.includes(origin) || isMeridianWorkerPreviewOrigin(origin) ? origin : null),
     allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
     maxAge: 86400,
